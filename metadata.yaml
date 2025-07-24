@@ -1,5 +1,7 @@
 homepage: "https://www.trkkn.com/"
 documentation: "https://github.com/trkkn/GTM-Server-Tag-Facebook-TRRKN-Version/blob/main/README.md"
 versions:
+  - sha: 76ad3ca3e38972d349f150c9badb5b0d4d943994
+    changeNotes: added a checkbox to allow user data collection, added user_email and user_phone_number to customEventMapping, template automatically grabs user_data.sha256_email_address and user_data.sha256_phone_number (1.6.0)
   - sha: eb5999a7428b7df30799c65ba413188a5fc3fdc1
-    changeNotes: Initial public release
+    changeNotes: Initial public release (1.5.0)
