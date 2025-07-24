@@ -1,5 +1,5 @@
-homepage: "https://trkkn.com/"
-documentation: "https://github.com/trakken/GTM-Server-Tag-Facebook-TRRKN-Version/blob/main/README.md"
+homepage: "https://www.trkkn.com/"
+documentation: "https://github.com/trkkn/GTM-Server-Tag-Facebook-TRRKN-Version/blob/main/README.md"
 versions:
   - sha: eb5999a7428b7df30799c65ba413188a5fc3fdc1
     changeNotes: Initial public release
