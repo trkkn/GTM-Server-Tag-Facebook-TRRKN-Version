@@ -5,14 +5,14 @@ ___INFO___
   "id": "cvt_temp_public_id",
   "version": 1,
   "securityGroups": [],
-  "displayName": "Facebook CAPI Tag - TRKKN version",
+  "displayName": "Meta CAPI Tag - TRKKN version",
   "brand": {
     "id": "trakkengmbh",
     "displayName": "TRKKN",
     "thumbnail": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFYAAABWCAMAAABiiJHFAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAtUExURTI0OFVWWudaWdwLCkBCRWVmaX+Ag2lrbuEsK4+Qk4iJi5aYmkdJTHN0dwAAAF0JZa0AAAAPdFJOU///////////////////ANTcmKEAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACTSURBVFhH7djLCsMgGAXh9H73/R83A55NJcS0IKUw30p+dJaCTmWIqUxdu+yN/aHLLMzCLMyizR5PC87pxRfZS46uMQuzMAuzMAuz+LPstYvsEGZhFmZhFsOyeSBUt4w/ds/NWpHNqtpy3y4yC7MwC7MwC7P4SXbL99oj4zfPBKo2u6j5DHxlvMIszMIszILsAKXMco/kEnH0rWUAAAAASUVORK5CYII="
   },
   "categories": ["ADVERTISING", "CONVERSIONS", "MARKETING"],
-  "description": "Based on the official FB template version: 0.0.9 (Sept 5, 2023). For more infos see notes.",
+  "description": "Enhanced the original Meta CAPI Tag by adding event and parameter mappings and more. Built on the official Facebook template (version 0.0.9, released September 5, 2023). For additional details, refer to the notes.",
   "containerContexts": ["SERVER"]
 }
 
@@ -177,40 +177,54 @@ event.user_data = {};
 event.user_data.client_ip_address = getIPAddress();
 event.user_data.client_user_agent = FB_PARAMS_MAPPINGS.user_agent || eventModel.user_agent;
 
-// Commmon Event Schema Parameters
-event.user_data.em =
-  FB_PARAMS_MAPPINGS.user_email ||
-  eventModel["x-fb-ud-em"] ||
-  (eventModel.user_data != null ? hashFunction(eventModel.user_data.email_address) : undefined);
+if (data.userDataAllowed) {
+  // Commmon Event Schema Parameters
+  const userEmail =
+    FB_PARAMS_MAPPINGS.user_email ||
+    eventModel["x-fb-ud-em"] ||
+    (eventModel.user_data != null ? eventModel.user_data.email_address : undefined) ||
+    (eventModel.user_data != null ? eventModel.user_data.sha256_email_address : undefined);
+  event.user_data.em = hashFunction(userEmail);
 
-let normalizedPhoneNumber = null;
-if (eventModel.user_data && eventModel.user_data.phone_number) {
-  normalizedPhoneNumber = eventModel.user_data.phone_number
-    .replace("+", "")
-    .replace("-", "")
-    .replace(" ", "")
-    .replace("(", "")
-    .replace(")", "");
-  normalizedPhoneNumber = hashFunction(normalizedPhoneNumber);
+  let normalizedPhoneNumber = null;
+  if (
+    FB_PARAMS_MAPPINGS.user_phone_number ||
+    (eventModel.user_data &&
+      (eventModel.user_data.phone_number || eventModel.user_data.sha256_phone_number))
+  ) {
+    const phoneNM =
+      FB_PARAMS_MAPPINGS.user_phone_number ||
+      eventModel.user_data.phone_number ||
+      eventModel.user_data.sha256_phone_number;
+    normalizedPhoneNumber = phoneNM
+      .replace("+", "")
+      .replace("-", "")
+      .replace(" ", "")
+      .replace("(", "")
+      .replace(")", "");
+    normalizedPhoneNumber = hashFunction(normalizedPhoneNumber);
+  }
+  event.user_data.ph =
+    eventModel["x-fb-ud-ph"] || (normalizedPhoneNumber != null ? normalizedPhoneNumber : undefined);
+
+  const addressData =
+    eventModel.user_data != null && eventModel.user_data.address != null
+      ? eventModel.user_data.address
+      : {};
+  event.user_data.fn = eventModel["x-fb-ud-fn"] || hashFunction(addressData.first_name);
+  event.user_data.ln = eventModel["x-fb-ud-ln"] || hashFunction(addressData.last_name);
+  event.user_data.ct = eventModel["x-fb-ud-ct"] || hashFunction(addressData.city);
+  event.user_data.st = eventModel["x-fb-ud-st"] || hashFunction(addressData.region);
+  event.user_data.zp = eventModel["x-fb-ud-zp"] || hashFunction(addressData.postal_code);
+  event.user_data.country =
+    FB_PARAMS_MAPPINGS.country ||
+    eventModel["x-fb-ud-country"] ||
+    hashFunction(addressData.country);
+
+  // Conversions API Specific Parameters
+  event.user_data.ge = FB_PARAMS_MAPPINGS.user_gender || eventModel["x-fb-ud-ge"];
+  event.user_data.db = FB_PARAMS_MAPPINGS.user_date_birth || eventModel["x-fb-ud-db"];
 }
-event.user_data.ph =
-  eventModel["x-fb-ud-ph"] || (normalizedPhoneNumber != null ? normalizedPhoneNumber : undefined);
-
-const addressData =
-  eventModel.user_data != null && eventModel.user_data.address != null
-    ? eventModel.user_data.address
-    : {};
-event.user_data.fn = eventModel["x-fb-ud-fn"] || hashFunction(addressData.first_name);
-event.user_data.ln = eventModel["x-fb-ud-ln"] || hashFunction(addressData.last_name);
-event.user_data.ct = eventModel["x-fb-ud-ct"] || hashFunction(addressData.city);
-event.user_data.st = eventModel["x-fb-ud-st"] || hashFunction(addressData.region);
-event.user_data.zp = eventModel["x-fb-ud-zp"] || hashFunction(addressData.postal_code);
-event.user_data.country =
-  FB_PARAMS_MAPPINGS.country || eventModel["x-fb-ud-country"] || hashFunction(addressData.country);
-
-// Conversions API Specific Parameters
-event.user_data.ge = FB_PARAMS_MAPPINGS.user_gender || eventModel["x-fb-ud-ge"];
-event.user_data.db = FB_PARAMS_MAPPINGS.user_date_birth || eventModel["x-fb-ud-db"];
 event.user_data.external_id = FB_PARAMS_MAPPINGS.external_id || eventModel["x-fb-ud-external_id"];
 event.user_data.subscription_id =
   FB_PARAMS_MAPPINGS.subscription_id || eventModel["x-fb-ud-subscription_id"];
@@ -900,6 +914,14 @@ ___TEMPLATE_PARAMETERS___
     "help": "Enable Use of HTTP Only Secure Cookie (gtmeec) to Enhance Event Data"
   },
   {
+    "type": "CHECKBOX",
+    "name": "userDataAllowed",
+    "checkboxText": "Enable Meta to track User Data",
+    "simpleValueType": true,
+    "help": "User Data is email, phone number, first name, last name, city, region, postal code, country, gender and birthdate. Enabling this tickbox will not automatically track the data, only enable you to do so.",
+    "alwaysInSummary": false
+  },
+  {
     "type": "SELECT",
     "name": "anonymizeIP",
     "displayName": "Anonymize IP",
@@ -1021,6 +1043,14 @@ ___TEMPLATE_PARAMETERS___
           {
             "value": "event_id",
             "displayValue": "event_id"
+          },
+          {
+            "value": "user_email",
+            "displayValue": "user_email"
+          },
+          {
+            "value": "user_phone_number",
+            "displayValue": "user_phone_number"
           }
         ]
       },
@@ -1058,7 +1088,7 @@ ___TEMPLATE_PARAMETERS___
   {
     "type": "LABEL",
     "name": "versionLabel",
-    "displayName": "template version: 1.5.0, FB: 0.0.9 (Sept 5, 2023)"
+    "displayName": "template version: 1.6.0, FB: 0.0.9 (Sept 5, 2023)"
   }
 ]
 
@@ -1215,7 +1245,7 @@ scenarios:
       mock('getAllEventData', () => {
         inputEventModel = {};
         inputEventModel.user_data = {};
-        inputEventModel.user_data.email_address = null;
+        inputEventModel.user_data.sha256_email_address = null;
         return inputEventModel;
       });
       runCode(testConfigurationData);
@@ -1409,7 +1439,8 @@ scenarios:
         testEventCode: 'test123',
         actionSource: 'source123',
         enableEventEnhancement: true,
-        extendCookies: false
+        extendCookies: false,
+        userDataAllowed: true,
       });
 
       let cookieOptions = {
@@ -1484,23 +1515,67 @@ scenarios:
 
       assertThat(JSON.parse(httpBody).data[0].user_data.em).isEqualTo('ee278943de84e5d6243578ee1a1057bcce0e50daad9755f45dfa64b60b13bc5d');
       assertThat(JSON.parse(httpBody).data[0].user_data.ph).isEqualTo('c775e7b757ede630cd0aa1113bd102661ab38829ca52a6422ab782862f268646');
+  - name: Grab the hashed email and phone number, check that isn't double hashed
+    code: |
+      mock("getAllEventData", () => {
+        inputEventModel = {};
+        inputEventModel.user_data = {};
+        inputEventModel.user_data.sha256_email_address = "0c7e6a405862e402eb76a70f8a26fc732d07c32931e9fae9ab1582911d2e8a3b";
+        inputEventModel.user_data.sha256_phone_number = "c775e7b757ede630cd0aa1113bd102661ab38829ca52a6422ab782862f268646";
+        return inputEventModel;
+      });
+
+      runCode(testConfigurationData);
+
+      //Assert
+      assertThat(JSON.parse(httpBody).data[0].user_data.em).isEqualTo(hashFunction("0c7e6a405862e402eb76a70f8a26fc732d07c32931e9fae9ab1582911d2e8a3b"));
+      assertThat(JSON.parse(httpBody).data[0].user_data.ph).isEqualTo(hashFunction("c775e7b757ede630cd0aa1113bd102661ab38829ca52a6422ab782862f268646"));
+  - name: Do not pass the email if User Data Tickbox isn't clicked
+    code: |-
+      mock("getAllEventData", () => {
+        inputEventModel = {};
+        inputEventModel.user_data = {};
+        inputEventModel.user_data.sha256_email_address = "0c7e6a405862e402eb76a70f8a26fc732d07c32931e9fae9ab1582911d2e8a3b";
+        inputEventModel.user_data.sha256_phone_number = "c775e7b757ede630cd0aa1113bd102661ab38829ca52a6422ab782862f268646";
+        return inputEventModel;
+      });
+      testConfigurationData.userDataAllowed = undefined;
+      runCode(testConfigurationData);
+
+      //Assert
+      assertThat(JSON.parse(httpBody).data[0].user_data.em).isUndefined();
+      assertThat(JSON.parse(httpBody).data[0].user_data.ph).isUndefined();
 setup: |-
   // Arrange
   const JSON = require('JSON');
   const Math = require('Math');
+  const getType = require("getType");
   const getTimestampMillis = require('getTimestampMillis');
   const sha256Sync = require('sha256Sync');
 
-  // helper methods
   function hashFunction(input) {
-    return sha256Sync(input.trim().toLowerCase(), {outputEncoding: 'hex'});
+    const type = getType(input);
+      if (type == "undefined" || input == "undefined") {
+        return undefined;
+    }
+
+  if (input == null || isAlreadyHashed(input)) {
+    return input;
+  }
+
+  return sha256Sync(input.trim().toLowerCase(), { outputEncoding: "hex" });
+  }
+
+  function isAlreadyHashed(input) {
+    return input && input.match("^[A-Fa-f0-9]{64}$") != null;
   }
 
   const testConfigurationData = {
     pixelId: '123',
     apiAccessToken: 'abc',
     testEventCode: 'test123',
-    actionSource: 'source123'
+    actionSource: 'source123',
+    userDataAllowed: true,
   };
 
   const testData = {
@@ -1592,7 +1667,7 @@ setup: |-
   'user_data': {
     'client_ip_address': testData.user_data.ip_address,
     'client_user_agent': testData.user_data.user_agent,
-    'em': testData.user_data.email,
+    'em': hashFunction(testData.user_data.email),
     'ph': testData.user_data.phone_number,
     'fn': testData.user_data.first_name,
     'ln': testData.user_data.last_name,
