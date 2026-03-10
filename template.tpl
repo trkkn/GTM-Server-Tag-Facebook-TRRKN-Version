@@ -12,17 +12,19 @@ ___INFO___
     "thumbnail": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFYAAABWCAMAAABiiJHFAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAtUExURTI0OFVWWudaWdwLCkBCRWVmaX+Ag2lrbuEsK4+Qk4iJi5aYmkdJTHN0dwAAAF0JZa0AAAAPdFJOU///////////////////ANTcmKEAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACTSURBVFhH7djLCsMgGAXh9H73/R83A55NJcS0IKUw30p+dJaCTmWIqUxdu+yN/aHLLMzCLMyizR5PC87pxRfZS46uMQuzMAuzMAuz+LPstYvsEGZhFmZhFsOyeSBUt4w/ds/NWpHNqtpy3y4yC7MwC7MwC7P4SXbL99oj4zfPBKo2u6j5DHxlvMIszMIszILsAKXMco/kEnH0rWUAAAAASUVORK5CYII="
   },
   "categories": ["ADVERTISING", "CONVERSIONS", "MARKETING"],
-  "description": "Enhanced the original Meta CAPI Tag by adding event and parameter mappings and more. Built on the official Facebook template (version 0.0.9, released September 5, 2023). For additional details, refer to the notes.",
+  "description": "Enhanced the original Meta CAPI Tag by adding event and parameter mappings and more. Built on the official Facebook template (version 1.0.0, released July 23, 2025). For additional details, refer to the notes.",
   "containerContexts": ["SERVER"]
 }
 
 ___NOTES___
 
-Based on the official template: https://github.com/facebookincubator/ConversionsAPI-Client-for-GoogleTagManager version: 0.0.9 (Sept 5, 2023)
+Based on the official template: https://github.com/facebookincubator/ConversionsAPI-Tag-for-GoogleTagManager version: 1.0.0 (July 23rd, 2025)
 Added Features:
 1. anonymisation of IP by default
 2. custom event mapping
 3. custom parameter mapping. 
+4. Support for FB Repost
+5. Support for multiple Pixel Ids
 
 With this template you do not need to follow FB namings.
 ___SANDBOXED_JS_FOR_SERVER___
@@ -48,7 +50,7 @@ const log = require("logToConsole");
 // Constants
 const API_ENDPOINT = "https://graph.facebook.com";
 const API_VERSION = "v16.0";
-const PARTNER_AGENT = "gtmss-1.0.0-0.0.9";
+const PARTNER_AGENT = "trkkn-2.0.0";
 const GTM_EVENT_MAPPINGS = {
   add_payment_info: "AddPaymentInfo",
   add_to_cart: "AddToCart",
@@ -159,25 +161,27 @@ function getContentFromItems(items) {
   });
 }
 
-function getFacebookEventName(gtmEventName) {
-  return GTM_EVENT_MAPPINGS[gtmEventName] || gtmEventName;
+function getMetaEventName(gtmEventName) {
+  //TRKKN changed
+  return eventModel.fbEventName || GTM_EVENT_MAPPINGS[gtmEventName] || gtmEventName;
 }
 
 const event = {};
-event.event_name = getFacebookEventName(eventModel.event_name);
+event.event_name = getMetaEventName(eventModel.event_name);
 event.event_time = eventModel.event_time || Math.round(getTimestampMillis() / 1000);
 event.event_id = FB_PARAMS_MAPPINGS.event_id || eventModel.event_id;
 event.event_source_url = eventModel.page_location;
 if (eventModel.action_source || data.actionSource) {
   event.action_source = eventModel.action_source ? eventModel.action_source : data.actionSource;
 }
+event.referrer_url = FB_PARAMS_MAPPINGS.page_referrer || eventModel.page_referrer;
 
 event.user_data = {};
 // Default Tag Parameters
 event.user_data.client_ip_address = getIPAddress();
 event.user_data.client_user_agent = FB_PARAMS_MAPPINGS.user_agent || eventModel.user_agent;
 
-if (data.userDataAllowed) {
+if (data.userDataAllowed === "allow") {
   // Commmon Event Schema Parameters
   const userEmail =
     FB_PARAMS_MAPPINGS.user_email ||
@@ -239,9 +243,34 @@ event.user_data.fb_login_id =
 
 event.custom_data = {};
 
+/* TRKKN Custom facebook event repost*/
+/* HOW TO UPDATE
+  main thing is to add FB_PARAMS_MAPPINGS in original 
+*/
+if (data.processTrkknRepostHits) {
+  let fbData =
+    data.repostDataSource === "default" ? eventModel.fbData || "{}" : data.repostDataSource;
+  if (getType(fbData) !== "string") {
+    log("ERROR: data for repost must be a string, Got: " + getType(fbData) + ". will be resetted.");
+    fbData = "{}";
+  }
+  const repostFbData = JSON.parse(fbData);
+
+  if (repostFbData) {
+    for (const property in repostFbData) {
+      if (valueIsFilled(repostFbData[property])) {
+        event.custom_data[property] = repostFbData[property];
+        FB_PARAMS_MAPPINGS[property] = repostFbData[property];
+      }
+    }
+  }
+}
+
+/* TRKKN Custom facebook event repost END*/
+
 /* TRKKN Custom 1.5*/
 /* HOW TO UPDATE
-main thing is to add FB_PARAMS_MAPPINGS in original 
+  main thing is to add FB_PARAMS_MAPPINGS in original 
 */
 if (data.customParameterMapping) {
   for (let i = 0; i < data.customParameterMapping.length; i += 1) {
@@ -276,6 +305,10 @@ event.custom_data.contents =
     : eventModel["x-fb-cd-contents"]) ||
   (eventModel.items != null ? getContentFromItems(eventModel.items) : undefined);
 
+if (event.custom_data.contents && !event.custom_data.content_type) {
+  event.custom_data.content_type = "product";
+}
+
 const customProperties =
   eventModel.custom_properties != null
     ? eventModel.custom_properties.indexOf(invalidString) == 0
@@ -294,9 +327,12 @@ event.custom_data.status = FB_PARAMS_MAPPINGS.status || eventModel["x-fb-cd-stat
 event.custom_data.delivery_category =
   FB_PARAMS_MAPPINGS.delivery_category || eventModel["x-fb-cd-delivery_category"];
 
-event.data_processing_options = eventModel.data_processing_options;
-event.data_processing_options_country = eventModel.data_processing_options_country;
-event.data_processing_options_state = eventModel.data_processing_options_state;
+event.data_processing_options =
+  FB_PARAMS_MAPPINGS.data_processing_options || eventModel.data_processing_options;
+event.data_processing_options_country =
+  FB_PARAMS_MAPPINGS.data_processing_options_country || eventModel.data_processing_options_country;
+event.data_processing_options_state =
+  FB_PARAMS_MAPPINGS.data_processing_options_state || eventModel.data_processing_options_state;
 
 function setGtmEecCookie(value) {
   const cookieJsonStr = JSON.stringify(value);
@@ -308,7 +344,7 @@ function setGtmEecCookie(value) {
 
 //sets first party cookie with latest merged user data.
 function setResponseHeaderCookies(user_data) {
-  let gtmeecCookie = JSON.parse("{}");
+  let gtmeecCookie = {};
 
   // if user_data has new information, gtmeec data is overriden
   if (user_data.em) {
@@ -442,7 +478,7 @@ function enhanceEventData(user_data) {
 }
 
 //send events to CAPI Server
-function sendEventToCapiServers(pixel_event) {
+function sendEventToCapiServers(pixel_event, pixel_id, api_access_token, callback) {
   // if event enhancement is enabled then event data is enhanced
   let partnerAgent = PARTNER_AGENT;
   if (data.enableEventEnhancement) {
@@ -458,14 +494,15 @@ function sendEventToCapiServers(pixel_event) {
       : data.testEventCode;
   }
 
-  const routeParams = "events?access_token=" + data.apiAccessToken;
-  const graphEndpoint = [API_ENDPOINT, API_VERSION, data.pixelId, routeParams].join("/");
+  const routeParams = "events?access_token=" + api_access_token;
+  const graphEndpoint = [API_ENDPOINT, API_VERSION, pixel_id, routeParams].join("/");
 
   const requestHeaders = { headers: { "content-type": "application/json" }, method: "POST" };
   return sendHttpRequest(
     graphEndpoint,
     (statusCode, headers, response) => {
-      if (statusCode >= 200 && statusCode < 300) {
+      const isSuccess = statusCode >= 200 && statusCode < 300;
+      if (isSuccess) {
         if (data.extendCookies && pixel_event.user_data.fbc) {
           setFbCookie("_fbc", pixel_event.user_data.fbc);
         }
@@ -477,18 +514,38 @@ function sendEventToCapiServers(pixel_event) {
         if (data.enableEventEnhancement) {
           setResponseHeaderCookies(pixel_event.user_data);
         }
-
-        data.gtmOnSuccess();
-      } else {
-        data.gtmOnFailure();
       }
+      if (callback) callback(isSuccess);
     },
     requestHeaders,
     JSON.stringify(eventRequest)
   );
 }
 
-sendEventToCapiServers(event);
+const pixelIdList = data.pixelId.split(",");
+const accessTokenList = data.apiAccessToken.split(",");
+
+let requestsToFinish = pixelIdList.length;
+let hasError = false;
+
+function onCompletion(success) {
+  requestsToFinish = requestsToFinish - 1;
+  if (!success) hasError = true;
+  if (requestsToFinish === 0) {
+    if (hasError) {
+      data.gtmOnFailure();
+    } else {
+      data.gtmOnSuccess();
+    }
+  }
+}
+
+for (var i = 0; i < pixelIdList.length; i += 1) {
+  var pId = pixelIdList[i].trim();
+  var aToken = (accessTokenList[i] || accessTokenList[0]).trim();
+
+  sendEventToCapiServers(event, pId, aToken, onCompletion);
+}
 
 // trkkn custom 2
 function valueIsFilled(value) {
@@ -497,7 +554,9 @@ function valueIsFilled(value) {
     value === "undefined" ||
     value === null ||
     value === "" ||
-    value === "null"
+    value === "null" ||
+    (getType(value) === "array" && (value[0] === "null" || value[0] === null)) ||
+    (getType(value) === "array" && (value[0] === "undefined" || value[0] === undefined))
   ) {
     return false;
   }
@@ -831,32 +890,33 @@ ___TEMPLATE_PARAMETERS___
   {
     "type": "TEXT",
     "name": "pixelId",
-    "displayName": "Pixel ID",
-    "simpleValueType": true,
-    "valueValidators": [
-      {
-        "type": "NON_EMPTY"
-      }
-    ]
-  },
-  {
-    "type": "TEXT",
-    "name": "apiAccessToken",
-    "displayName": "API Access Token",
+    "displayName": "Pixel ID(s)",
     "simpleValueType": true,
     "valueValidators": [
       {
         "type": "NON_EMPTY"
       }
     ],
-    "help": "To use the Conversions API, you need an access token. See \u003ca href\u003d\"https://developers.facebook.com/docs/marketing-api/conversions-api/get-started#access-token\"\u003ehere\u003c/a\u003e for generating an access token."
+    "help": "For sending to multiple Pixel IDs provide a comma-separated list of pixel ids."
+  },
+  {
+    "type": "TEXT",
+    "name": "apiAccessToken",
+    "displayName": "API Access Token(s)",
+    "simpleValueType": true,
+    "valueValidators": [
+      {
+        "type": "NON_EMPTY"
+      }
+    ],
+    "help": "To use the Conversions API, you need an access token. If providing multiple Pixel IDs, provide a corresponding comma-separated list of Access Tokens. See <a href=\"https://developers.facebook.com/docs/marketing-api/conversions-api/get-started#access-token\">here</a> for generating an access token."
   },
   {
     "type": "TEXT",
     "name": "testEventCode",
     "displayName": "Test Event Code",
     "simpleValueType": true,
-    "help": "Code used to verify that your server events are received correctly by Conversions API. Use this code to test your server events in the Test Events feature in Events Manager. See \u003ca href\u003d\"https://developers.facebook.com/docs/marketing-api/conversions-api/using-the-api#testEvents\"\u003e Test Events Tool\u003c/a\u003e for an example."
+    "help": "Code used to verify that your server events are received correctly by Conversions API. Use this code to test your server events in the Test Events feature in Events Manager. See <a href=\"https://developers.facebook.com/docs/marketing-api/conversions-api/using-the-api#testEvents\"> Test Events Tool</a> for an example."
   },
   {
     "type": "SELECT",
@@ -898,7 +958,7 @@ ___TEMPLATE_PARAMETERS___
       }
     ],
     "simpleValueType": true,
-    "help": "This field allows you to specify where your conversions occurred. Knowing where your events took place helps ensure your ads go to the right people. See \u003ca href\u003d\"https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/server-event#action-source\"\u003ehere\u003c/a\u003e for more information."
+    "help": "This field allows you to specify where your conversions occurred. Knowing where your events took place helps ensure your ads go to the right people. See <a href=\"https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/server-event#action-source\">here</a> for more information."
   },
   {
     "type": "CHECKBOX",
@@ -914,18 +974,30 @@ ___TEMPLATE_PARAMETERS___
     "help": "Enable Use of HTTP Only Secure Cookie (gtmeec) to Enhance Event Data"
   },
   {
-    "type": "CHECKBOX",
+    "type": "SELECT",
     "name": "userDataAllowed",
-    "checkboxText": "Enable Meta to track User Data",
+    "displayName": "Allow Meta to track User Data",
+    "macrosInSelect": true,
+    "selectItems": [
+      {
+        "value": "allow",
+        "displayValue": "allow"
+      },
+      {
+        "value": "deny",
+        "displayValue": "deny"
+      }
+    ],
     "simpleValueType": true,
-    "help": "User Data is email, phone number, first name, last name, city, region, postal code, country, gender and birthdate. Enabling this tickbox will not automatically track the data, only enable you to do so.",
-    "alwaysInSummary": false
+    "help": "User Data is email, phone number, first name, last name, city, region, postal code, country, gender and birthdate. Setting this to 'deny' ensures Facebook can not track any of this information. When set to 'allow', the template will automatically pull these details from standard event fields or your custom mappings.",
+    "alwaysInSummary": true,
+    "defaultValue": "deny"
   },
   {
     "type": "SELECT",
     "name": "anonymizeIP",
     "displayName": "Anonymize IP",
-    "macrosInSelect": false,
+    "macrosInSelect": true,
     "selectItems": [
       {
         "value": "ip_override",
@@ -942,7 +1014,7 @@ ___TEMPLATE_PARAMETERS___
     ],
     "simpleValueType": true,
     "defaultValue": "ip_override",
-    "help": "If not sure what to do, stick with ip_override. This is the Facebook recommended setting.",
+    "help": "Not sure? Select 'ip_override from event data' (Facebook's recommended setting).",
     "valueValidators": [
       {
         "type": "NON_EMPTY"
@@ -952,7 +1024,7 @@ ___TEMPLATE_PARAMETERS___
   {
     "type": "SIMPLE_TABLE",
     "name": "customEventMapping",
-    "displayName": "",
+    "displayName": "Event Name Mapping",
     "simpleTableColumns": [
       {
         "defaultValue": "",
@@ -967,12 +1039,13 @@ ___TEMPLATE_PARAMETERS___
         "type": "TEXT"
       }
     ],
-    "newRowButtonText": "Add Event Mapping"
+    "newRowButtonText": "Add Event Mapping",
+    "help": "Map incoming events to Facebook events. (Important: Names require an exact match)."
   },
   {
     "type": "SIMPLE_TABLE",
     "name": "fbParameterMapping",
-    "displayName": "",
+    "displayName": "FB Standard Parameter Mapping",
     "simpleTableColumns": [
       {
         "defaultValue": "",
@@ -1051,6 +1124,34 @@ ___TEMPLATE_PARAMETERS___
           {
             "value": "user_phone_number",
             "displayValue": "user_phone_number"
+          },
+          {
+            "value": "page_referrer",
+            "displayValue": "page_referrer"
+          },
+          {
+            "value": "country",
+            "displayValue": "country"
+          },
+          {
+            "value": "user_gender",
+            "displayValue": "user_gender"
+          },
+          {
+            "value": "user_date_birth",
+            "displayValue": "user_date_birth"
+          },
+          {
+            "value": "data_processing_options",
+            "displayValue": "data_processing_options"
+          },
+          {
+            "value": "data_processing_options_country",
+            "displayValue": "data_processing_options_country"
+          },
+          {
+            "value": "data_processing_options_state",
+            "displayValue": "data_processing_options_state"
           }
         ]
       },
@@ -1062,12 +1163,13 @@ ___TEMPLATE_PARAMETERS___
       }
     ],
     "alwaysInSummary": false,
-    "newRowButtonText": "Add FB Parameter Mapping"
+    "newRowButtonText": "Add FB Parameter Mapping",
+    "help": "By default, parameters are pulled from standard event data. Add a mapping here to use a custom event data field instead."
   },
   {
     "type": "SIMPLE_TABLE",
     "name": "customParameterMapping",
-    "displayName": "",
+    "displayName": "Add Custom Facebook Parameter",
     "simpleTableColumns": [
       {
         "defaultValue": "",
@@ -1083,12 +1185,49 @@ ___TEMPLATE_PARAMETERS___
       }
     ],
     "newRowButtonText": "Add Custom Parameter",
+    "alwaysInSummary": true,
+    "help": "Add custom parameters here for any data not included in Facebook's standard tracking."
+  },
+  {
+    "type": "CHECKBOX",
+    "name": "processTrkknRepostHits",
+    "checkboxText": "Get Data from TRKKN Reposted Hits",
+    "simpleValueType": true,
+    "help": "Enable automatic process of reposted Facebook hits. Triggered by the TRKKN Web Template. Leave it unchecked, if you do not know what this means.",
+    "defaultValue": false,
     "alwaysInSummary": true
+  },
+  {
+    "type": "SELECT",
+    "name": "repostDataSource",
+    "displayName": "Data Source (needs to be a json string, unparsed)",
+    "macrosInSelect": true,
+    "selectItems": [
+      {
+        "value": "default",
+        "displayValue": "default (fbData from Event Data)"
+      }
+    ],
+    "simpleValueType": true,
+    "help": "If 'default', the source is: fbDate, from event data. Switch to any available variable to customize your data flow.",
+    "enablingConditions": [
+      {
+        "paramName": "processTrkknRepostHits",
+        "paramValue": true,
+        "type": "EQUALS"
+      }
+    ],
+    "defaultValue": "default"
+  },
+  {
+    "type": "LABEL",
+    "name": "label1",
+    "displayName": "________________________________________________________________________"
   },
   {
     "type": "LABEL",
     "name": "versionLabel",
-    "displayName": "template version: 1.6.0, FB: 0.0.9 (Sept 5, 2023)"
+    "displayName": "template version: 2.0.0, FB: 1.0.0 (July 23rd, 2025)"
   }
 ]
 
@@ -1440,7 +1579,7 @@ scenarios:
         actionSource: 'source123',
         enableEventEnhancement: true,
         extendCookies: false,
-        userDataAllowed: true,
+        userDataAllowed: "allow",
       });
 
       let cookieOptions = {
@@ -1552,6 +1691,7 @@ setup: |-
   const getType = require("getType");
   const getTimestampMillis = require('getTimestampMillis');
   const sha256Sync = require('sha256Sync');
+  const log = require('logToConsole');
 
   function hashFunction(input) {
     const type = getType(input);
@@ -1575,7 +1715,8 @@ setup: |-
     apiAccessToken: 'abc',
     testEventCode: 'test123',
     actionSource: 'source123',
-    userDataAllowed: true,
+    userDataAllowed: "allow",
+    anonymizeIP : 'ip_override'
   };
 
   const testData = {
@@ -1708,7 +1849,7 @@ setup: |-
 
   const apiEndpoint = 'https://graph.facebook.com';
   const apiVersion = 'v16.0';
-  const partnerAgent = 'gtmss-1.0.0-0.0.9';
+  const partnerAgent = 'trkkn-2.0.0';
 
   const routeParams = 'events?access_token=' + testConfigurationData.apiAccessToken;
   const requestEndpoint = [apiEndpoint,
@@ -1726,6 +1867,7 @@ setup: |-
 
   let actualSuccessCallback, httpBody;
   mock('sendHttpRequest', (postUrl, response, options, body) => {
+    log(body);
     actualSuccessCallback = response;
     httpBody = body;
     actualSuccessCallback(200, {}, '');

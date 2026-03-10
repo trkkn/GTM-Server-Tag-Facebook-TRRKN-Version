@@ -17,4 +17,6 @@ We've improved the original Facebook template to offer greater flexibility in im
 4. **Automatic Hashed Email Retrieval**  
    Now automatically retrieves hashed email data from Google Ads/Floodlight event parameters, streamlining cross-platform tracking.
 
+5. **Support** for TRKKNs Facebook repost logic
+
 These enhancements make the TRRKN-Version of the Facebook tag more adaptable and privacy-conscious, aligning with modern tracking needs.
