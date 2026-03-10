@@ -20,3 +20,5 @@ We've improved the original Facebook template to offer greater flexibility in im
 5. **Support** for TRKKNs Facebook repost logic
 
 These enhancements make the TRRKN-Version of the Facebook tag more adaptable and privacy-conscious, aligning with modern tracking needs.
+
+[Improved CAPI template](https://tagmanager.google.com/gallery/#/owners/trkkn/templates/GTM-Server-Tag-Facebook-TRRKN-Version) for server side Tag Manager in official template gallery.
