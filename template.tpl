@@ -1,3 +1,11 @@
+﻿___TERMS_OF_SERVICE___
+
+By creating or modifying this file you agree to Google Tag Manager's Community
+Template Gallery Developer Terms of Service available at
+https://developers.google.com/tag-manager/gallery-tos (or such other URL as
+Google may provide), as modified from time to time.
+
+
 ___INFO___
 
 {
@@ -9,24 +17,368 @@ ___INFO___
   "brand": {
     "id": "trakkengmbh",
     "displayName": "TRKKN",
-    "thumbnail": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFYAAABWCAMAAABiiJHFAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAtUExURTI0OFVWWudaWdwLCkBCRWVmaX+Ag2lrbuEsK4+Qk4iJi5aYmkdJTHN0dwAAAF0JZa0AAAAPdFJOU///////////////////ANTcmKEAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACTSURBVFhH7djLCsMgGAXh9H73/R83A55NJcS0IKUw30p+dJaCTmWIqUxdu+yN/aHLLMzCLMyizR5PC87pxRfZS46uMQuzMAuzMAuz+LPstYvsEGZhFmZhFsOyeSBUt4w/ds/NWpHNqtpy3y4yC7MwC7MwC7P4SXbL99oj4zfPBKo2u6j5DHxlvMIszMIszILsAKXMco/kEnH0rWUAAAAASUVORK5CYII="
+    "thumbnail": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFYAAABWCAMAAABiiJHFAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAtUExURTI0OFVWWudaWdwLCkBCRWVmaX+Ag2lrbuEsK4+Qk4iJi5aYmkdJTHN0dwAAAF0JZa0AAAAPdFJOU///////////////////ANTcmKEAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACTSURBVFhH7djLCsMgGAXh9H73/R83A55NJcS0IKUw30p+dJaCTmWIqUxdu+yN/aHLLMzCLMyizR5PC87pxRfZS46uMQuzMAuzMAuz+LPstYvsEGZhFmZhFsOyeSBUt4w/ds/NWpHNqtpy3y4yC7MwC7MwC7P4SXbL99oj4zfPBKo2u6j5DHxlvMIszMIszILsAKXMco/kEnH0rWUAAAAASUVORK5CYII\u003d"
   },
-  "categories": ["ADVERTISING", "CONVERSIONS", "MARKETING"],
+  "categories": [
+    "ADVERTISING",
+    "CONVERSIONS",
+    "MARKETING"
+  ],
   "description": "Enhanced the original Meta CAPI Tag by adding event and parameter mappings and more. Built on the official Facebook template (version 1.0.0, released July 23, 2025). For additional details, refer to the notes.",
-  "containerContexts": ["SERVER"]
+  "containerContexts": [
+    "SERVER"
+  ]
 }
 
-___NOTES___
 
-Based on the official template: https://github.com/facebookincubator/ConversionsAPI-Tag-for-GoogleTagManager version: 1.0.0 (July 23rd, 2025)
-Added Features:
-1. anonymisation of IP by default
-2. custom event mapping
-3. custom parameter mapping. 
-4. Support for FB Repost
-5. Support for multiple Pixel Ids
+___TEMPLATE_PARAMETERS___
 
-With this template you do not need to follow FB namings.
+[
+  {
+    "type": "TEXT",
+    "name": "pixelId",
+    "displayName": "Pixel ID(s)",
+    "simpleValueType": true,
+    "valueValidators": [
+      {
+        "type": "NON_EMPTY"
+      }
+    ],
+    "help": "For sending to multiple Pixel IDs provide a comma-separated list of pixel ids."
+  },
+  {
+    "type": "TEXT",
+    "name": "apiAccessToken",
+    "displayName": "API Access Token(s)",
+    "simpleValueType": true,
+    "valueValidators": [
+      {
+        "type": "NON_EMPTY"
+      }
+    ],
+    "help": "To use the Conversions API, you need an access token. If providing multiple Pixel IDs, provide a corresponding comma-separated list of Access Tokens. See \u003ca href\u003d\"https://developers.facebook.com/docs/marketing-api/conversions-api/get-started#access-token\"\u003ehere\u003c/a\u003e for generating an access token."
+  },
+  {
+    "type": "TEXT",
+    "name": "testEventCode",
+    "displayName": "Test Event Code",
+    "simpleValueType": true,
+    "help": "Code used to verify that your server events are received correctly by Conversions API. Use this code to test your server events in the Test Events feature in Events Manager. See \u003ca href\u003d\"https://developers.facebook.com/docs/marketing-api/conversions-api/using-the-api#testEvents\"\u003e Test Events Tool\u003c/a\u003e for an example."
+  },
+  {
+    "type": "SELECT",
+    "name": "actionSource",
+    "displayName": "Action Source",
+    "macrosInSelect": false,
+    "selectItems": [
+      {
+        "value": "website",
+        "displayValue": "Website"
+      },
+      {
+        "value": "email",
+        "displayValue": "Email"
+      },
+      {
+        "value": "app",
+        "displayValue": "App"
+      },
+      {
+        "value": "phone_call",
+        "displayValue": "Phone Call"
+      },
+      {
+        "value": "chat",
+        "displayValue": "Chat"
+      },
+      {
+        "value": "physical_store",
+        "displayValue": "Physical Store"
+      },
+      {
+        "value": "system_generated",
+        "displayValue": "System Generated"
+      },
+      {
+        "value": "other",
+        "displayValue": "Other"
+      }
+    ],
+    "simpleValueType": true,
+    "help": "This field allows you to specify where your conversions occurred. Knowing where your events took place helps ensure your ads go to the right people. See \u003ca href\u003d\"https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/server-event#action-source\"\u003ehere\u003c/a\u003e for more information."
+  },
+  {
+    "type": "CHECKBOX",
+    "name": "extendCookies",
+    "checkboxText": "Extend Meta Pixel cookies (fbp/fbc)",
+    "simpleValueType": true
+  },
+  {
+    "type": "CHECKBOX",
+    "name": "enableEventEnhancement",
+    "checkboxText": "Enable Event Enhancement",
+    "simpleValueType": true,
+    "help": "Enable Use of HTTP Only Secure Cookie (gtmeec) to Enhance Event Data"
+  },
+  {
+    "type": "SELECT",
+    "name": "userDataAllowed",
+    "displayName": "Allow Meta to track User Data",
+    "macrosInSelect": true,
+    "selectItems": [
+      {
+        "value": "allow",
+        "displayValue": "allow"
+      },
+      {
+        "value": "deny",
+        "displayValue": "deny"
+      }
+    ],
+    "simpleValueType": true,
+    "help": "User Data is email, phone number, first name, last name, city, region, postal code, country, gender and birthdate. Setting this to \u0027deny\u0027 ensures Facebook can not track any of this information. When set to \u0027allow\u0027, the template will automatically pull these details from standard event fields or your custom mappings.",
+    "alwaysInSummary": true,
+    "defaultValue": "deny"
+  },
+  {
+    "type": "SELECT",
+    "name": "anonymizeIP",
+    "displayName": "Anonymize IP",
+    "macrosInSelect": true,
+    "selectItems": [
+      {
+        "value": "ip_override",
+        "displayValue": "ip_override from event data"
+      },
+      {
+        "value": "remove",
+        "displayValue": "Remove IP completly"
+      },
+      {
+        "value": "extraAnonymisation",
+        "displayValue": "Use anonymisation on ip_override"
+      }
+    ],
+    "simpleValueType": true,
+    "defaultValue": "ip_override",
+    "help": "Not sure? Select \u0027ip_override from event data\u0027 (Facebook\u0027s recommended setting).",
+    "valueValidators": [
+      {
+        "type": "NON_EMPTY"
+      }
+    ]
+  },
+  {
+    "type": "SIMPLE_TABLE",
+    "name": "customEventMapping",
+    "displayName": "Event Name Mapping",
+    "simpleTableColumns": [
+      {
+        "defaultValue": "",
+        "displayName": "Incoming Event Name",
+        "name": "event_name",
+        "type": "TEXT"
+      },
+      {
+        "defaultValue": "",
+        "displayName": "Event Name for Facebook",
+        "name": "event_name_facebook",
+        "type": "TEXT"
+      }
+    ],
+    "newRowButtonText": "Add Event Mapping",
+    "help": "Map incoming events to Facebook events. (Important: Names require an exact match)."
+  },
+  {
+    "type": "SIMPLE_TABLE",
+    "name": "fbParameterMapping",
+    "displayName": "FB Standard Parameter Mapping",
+    "simpleTableColumns": [
+      {
+        "defaultValue": "",
+        "displayName": "Parameter Key",
+        "name": "fb_parameter_key",
+        "type": "SELECT",
+        "selectItems": [
+          {
+            "value": "currency",
+            "displayValue": "currency"
+          },
+          {
+            "value": "external_id",
+            "displayValue": "external_id"
+          },
+          {
+            "value": "subscription_id",
+            "displayValue": "subscription_id"
+          },
+          {
+            "value": "search_string",
+            "displayValue": "search_string"
+          },
+          {
+            "value": "order_id",
+            "displayValue": "order_id"
+          },
+          {
+            "value": "content_category",
+            "displayValue": "content_category"
+          },
+          {
+            "value": "content_ids",
+            "displayValue": "content_ids"
+          },
+          {
+            "value": "content_name",
+            "displayValue": "content_name"
+          },
+          {
+            "value": "content_type",
+            "displayValue": "content_type"
+          },
+          {
+            "value": "contents",
+            "displayValue": "contents"
+          },
+          {
+            "value": "num_items",
+            "displayValue": "num_items"
+          },
+          {
+            "value": "predicted_ltv",
+            "displayValue": "predicted_ltv"
+          },
+          {
+            "value": "status",
+            "displayValue": "status"
+          },
+          {
+            "value": "delivery_category",
+            "displayValue": "delivery_category"
+          },
+          {
+            "value": "user_agent",
+            "displayValue": "user_agent"
+          },
+          {
+            "value": "event_id",
+            "displayValue": "event_id"
+          },
+          {
+            "value": "user_email",
+            "displayValue": "user_email"
+          },
+          {
+            "value": "user_phone_number",
+            "displayValue": "user_phone_number"
+          },
+          {
+            "value": "page_referrer",
+            "displayValue": "page_referrer"
+          },
+          {
+            "value": "country",
+            "displayValue": "country"
+          },
+          {
+            "value": "user_gender",
+            "displayValue": "user_gender"
+          },
+          {
+            "value": "user_date_birth",
+            "displayValue": "user_date_birth"
+          },
+          {
+            "value": "data_processing_options",
+            "displayValue": "data_processing_options"
+          },
+          {
+            "value": "data_processing_options_country",
+            "displayValue": "data_processing_options_country"
+          },
+          {
+            "value": "data_processing_options_state",
+            "displayValue": "data_processing_options_state"
+          }
+        ]
+      },
+      {
+        "defaultValue": "",
+        "displayName": "Value",
+        "name": "fb_parameter_value",
+        "type": "TEXT"
+      }
+    ],
+    "alwaysInSummary": false,
+    "newRowButtonText": "Add FB Parameter Mapping",
+    "help": "By default, parameters are pulled from standard event data. Add a mapping here to use a custom event data field instead."
+  },
+  {
+    "type": "SIMPLE_TABLE",
+    "name": "customParameterMapping",
+    "displayName": "Add Custom Facebook Parameter",
+    "simpleTableColumns": [
+      {
+        "defaultValue": "",
+        "displayName": "Facebook Custom Parameter Key",
+        "name": "fb_cust_parameter_key",
+        "type": "TEXT"
+      },
+      {
+        "defaultValue": "",
+        "displayName": "Value",
+        "name": "fb_cust_parameter_value",
+        "type": "TEXT"
+      }
+    ],
+    "newRowButtonText": "Add Custom Parameter",
+    "alwaysInSummary": true,
+    "help": "Add custom parameters here for any data not included in Facebook\u0027s standard tracking."
+  },
+  {
+    "type": "CHECKBOX",
+    "name": "processTrkknRepostHits",
+    "checkboxText": "Get Data from TRKKN Reposted Hits",
+    "simpleValueType": true,
+    "help": "Enable automatic process of reposted Facebook hits. Triggered by the TRKKN Web Template. Leave it unchecked, if you do not know what this means.",
+    "defaultValue": false,
+    "alwaysInSummary": true
+  },
+  {
+    "type": "SELECT",
+    "name": "repostDataSource",
+    "displayName": "Data Source (needs to be a json string, unparsed)",
+    "macrosInSelect": true,
+    "selectItems": [
+      {
+        "value": "default",
+        "displayValue": "default (fbData from Event Data)"
+      }
+    ],
+    "simpleValueType": true,
+    "help": "If \u0027default\u0027, the source is: fbDate, from event data. Switch to any available variable to customize your data flow.",
+    "enablingConditions": [
+      {
+        "paramName": "processTrkknRepostHits",
+        "paramValue": true,
+        "type": "EQUALS"
+      }
+    ],
+    "defaultValue": "default"
+  },
+  {
+    "type": "LABEL",
+    "name": "label1",
+    "displayName": "________________________________________________________________________"
+  },
+  {
+    "type": "LABEL",
+    "name": "versionLabel",
+    "displayName": "template version: 2.0.0, FB: 1.0.0 (July 23rd, 2025)"
+  }
+]
+
+
 ___SANDBOXED_JS_FOR_SERVER___
 
 // Sandbox Javascript imports
@@ -603,6 +955,7 @@ function anonymizeIP(ip) {
 
 /* TRKKN Custom 2 END*/
 
+
 ___SERVER_PERMISSIONS___
 
 [
@@ -884,806 +1237,453 @@ ___SERVER_PERMISSIONS___
   }
 ]
 
-___TEMPLATE_PARAMETERS___
-
-[
-  {
-    "type": "TEXT",
-    "name": "pixelId",
-    "displayName": "Pixel ID(s)",
-    "simpleValueType": true,
-    "valueValidators": [
-      {
-        "type": "NON_EMPTY"
-      }
-    ],
-    "help": "For sending to multiple Pixel IDs provide a comma-separated list of pixel ids."
-  },
-  {
-    "type": "TEXT",
-    "name": "apiAccessToken",
-    "displayName": "API Access Token(s)",
-    "simpleValueType": true,
-    "valueValidators": [
-      {
-        "type": "NON_EMPTY"
-      }
-    ],
-    "help": "To use the Conversions API, you need an access token. If providing multiple Pixel IDs, provide a corresponding comma-separated list of Access Tokens. See <a href=\"https://developers.facebook.com/docs/marketing-api/conversions-api/get-started#access-token\">here</a> for generating an access token."
-  },
-  {
-    "type": "TEXT",
-    "name": "testEventCode",
-    "displayName": "Test Event Code",
-    "simpleValueType": true,
-    "help": "Code used to verify that your server events are received correctly by Conversions API. Use this code to test your server events in the Test Events feature in Events Manager. See <a href=\"https://developers.facebook.com/docs/marketing-api/conversions-api/using-the-api#testEvents\"> Test Events Tool</a> for an example."
-  },
-  {
-    "type": "SELECT",
-    "name": "actionSource",
-    "displayName": "Action Source",
-    "macrosInSelect": false,
-    "selectItems": [
-      {
-        "value": "website",
-        "displayValue": "Website"
-      },
-      {
-        "value": "email",
-        "displayValue": "Email"
-      },
-      {
-        "value": "app",
-        "displayValue": "App"
-      },
-      {
-        "value": "phone_call",
-        "displayValue": "Phone Call"
-      },
-      {
-        "value": "chat",
-        "displayValue": "Chat"
-      },
-      {
-        "value": "physical_store",
-        "displayValue": "Physical Store"
-      },
-      {
-        "value": "system_generated",
-        "displayValue": "System Generated"
-      },
-      {
-        "value": "other",
-        "displayValue": "Other"
-      }
-    ],
-    "simpleValueType": true,
-    "help": "This field allows you to specify where your conversions occurred. Knowing where your events took place helps ensure your ads go to the right people. See <a href=\"https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/server-event#action-source\">here</a> for more information."
-  },
-  {
-    "type": "CHECKBOX",
-    "name": "extendCookies",
-    "checkboxText": "Extend Meta Pixel cookies (fbp/fbc)",
-    "simpleValueType": true
-  },
-  {
-    "type": "CHECKBOX",
-    "name": "enableEventEnhancement",
-    "checkboxText": "Enable Event Enhancement",
-    "simpleValueType": true,
-    "help": "Enable Use of HTTP Only Secure Cookie (gtmeec) to Enhance Event Data"
-  },
-  {
-    "type": "SELECT",
-    "name": "userDataAllowed",
-    "displayName": "Allow Meta to track User Data",
-    "macrosInSelect": true,
-    "selectItems": [
-      {
-        "value": "allow",
-        "displayValue": "allow"
-      },
-      {
-        "value": "deny",
-        "displayValue": "deny"
-      }
-    ],
-    "simpleValueType": true,
-    "help": "User Data is email, phone number, first name, last name, city, region, postal code, country, gender and birthdate. Setting this to 'deny' ensures Facebook can not track any of this information. When set to 'allow', the template will automatically pull these details from standard event fields or your custom mappings.",
-    "alwaysInSummary": true,
-    "defaultValue": "deny"
-  },
-  {
-    "type": "SELECT",
-    "name": "anonymizeIP",
-    "displayName": "Anonymize IP",
-    "macrosInSelect": true,
-    "selectItems": [
-      {
-        "value": "ip_override",
-        "displayValue": "ip_override from event data"
-      },
-      {
-        "value": "remove",
-        "displayValue": "Remove IP completly"
-      },
-      {
-        "value": "extraAnonymisation",
-        "displayValue": "Use anonymisation on ip_override"
-      }
-    ],
-    "simpleValueType": true,
-    "defaultValue": "ip_override",
-    "help": "Not sure? Select 'ip_override from event data' (Facebook's recommended setting).",
-    "valueValidators": [
-      {
-        "type": "NON_EMPTY"
-      }
-    ]
-  },
-  {
-    "type": "SIMPLE_TABLE",
-    "name": "customEventMapping",
-    "displayName": "Event Name Mapping",
-    "simpleTableColumns": [
-      {
-        "defaultValue": "",
-        "displayName": "Incoming Event Name",
-        "name": "event_name",
-        "type": "TEXT"
-      },
-      {
-        "defaultValue": "",
-        "displayName": "Event Name for Facebook",
-        "name": "event_name_facebook",
-        "type": "TEXT"
-      }
-    ],
-    "newRowButtonText": "Add Event Mapping",
-    "help": "Map incoming events to Facebook events. (Important: Names require an exact match)."
-  },
-  {
-    "type": "SIMPLE_TABLE",
-    "name": "fbParameterMapping",
-    "displayName": "FB Standard Parameter Mapping",
-    "simpleTableColumns": [
-      {
-        "defaultValue": "",
-        "displayName": "Parameter Key",
-        "name": "fb_parameter_key",
-        "type": "SELECT",
-        "selectItems": [
-          {
-            "value": "currency",
-            "displayValue": "currency"
-          },
-          {
-            "value": "external_id",
-            "displayValue": "external_id"
-          },
-          {
-            "value": "subscription_id",
-            "displayValue": "subscription_id"
-          },
-          {
-            "value": "search_string",
-            "displayValue": "search_string"
-          },
-          {
-            "value": "order_id",
-            "displayValue": "order_id"
-          },
-          {
-            "value": "content_category",
-            "displayValue": "content_category"
-          },
-          {
-            "value": "content_ids",
-            "displayValue": "content_ids"
-          },
-          {
-            "value": "content_name",
-            "displayValue": "content_name"
-          },
-          {
-            "value": "content_type",
-            "displayValue": "content_type"
-          },
-          {
-            "value": "contents",
-            "displayValue": "contents"
-          },
-          {
-            "value": "num_items",
-            "displayValue": "num_items"
-          },
-          {
-            "value": "predicted_ltv",
-            "displayValue": "predicted_ltv"
-          },
-          {
-            "value": "status",
-            "displayValue": "status"
-          },
-          {
-            "value": "delivery_category",
-            "displayValue": "delivery_category"
-          },
-          {
-            "value": "user_agent",
-            "displayValue": "user_agent"
-          },
-          {
-            "value": "event_id",
-            "displayValue": "event_id"
-          },
-          {
-            "value": "user_email",
-            "displayValue": "user_email"
-          },
-          {
-            "value": "user_phone_number",
-            "displayValue": "user_phone_number"
-          },
-          {
-            "value": "page_referrer",
-            "displayValue": "page_referrer"
-          },
-          {
-            "value": "country",
-            "displayValue": "country"
-          },
-          {
-            "value": "user_gender",
-            "displayValue": "user_gender"
-          },
-          {
-            "value": "user_date_birth",
-            "displayValue": "user_date_birth"
-          },
-          {
-            "value": "data_processing_options",
-            "displayValue": "data_processing_options"
-          },
-          {
-            "value": "data_processing_options_country",
-            "displayValue": "data_processing_options_country"
-          },
-          {
-            "value": "data_processing_options_state",
-            "displayValue": "data_processing_options_state"
-          }
-        ]
-      },
-      {
-        "defaultValue": "",
-        "displayName": "Value",
-        "name": "fb_parameter_value",
-        "type": "TEXT"
-      }
-    ],
-    "alwaysInSummary": false,
-    "newRowButtonText": "Add FB Parameter Mapping",
-    "help": "By default, parameters are pulled from standard event data. Add a mapping here to use a custom event data field instead."
-  },
-  {
-    "type": "SIMPLE_TABLE",
-    "name": "customParameterMapping",
-    "displayName": "Add Custom Facebook Parameter",
-    "simpleTableColumns": [
-      {
-        "defaultValue": "",
-        "displayName": "Facebook Custom Parameter Key",
-        "name": "fb_cust_parameter_key",
-        "type": "TEXT"
-      },
-      {
-        "defaultValue": "",
-        "displayName": "Value",
-        "name": "fb_cust_parameter_value",
-        "type": "TEXT"
-      }
-    ],
-    "newRowButtonText": "Add Custom Parameter",
-    "alwaysInSummary": true,
-    "help": "Add custom parameters here for any data not included in Facebook's standard tracking."
-  },
-  {
-    "type": "CHECKBOX",
-    "name": "processTrkknRepostHits",
-    "checkboxText": "Get Data from TRKKN Reposted Hits",
-    "simpleValueType": true,
-    "help": "Enable automatic process of reposted Facebook hits. Triggered by the TRKKN Web Template. Leave it unchecked, if you do not know what this means.",
-    "defaultValue": false,
-    "alwaysInSummary": true
-  },
-  {
-    "type": "SELECT",
-    "name": "repostDataSource",
-    "displayName": "Data Source (needs to be a json string, unparsed)",
-    "macrosInSelect": true,
-    "selectItems": [
-      {
-        "value": "default",
-        "displayValue": "default (fbData from Event Data)"
-      }
-    ],
-    "simpleValueType": true,
-    "help": "If 'default', the source is: fbDate, from event data. Switch to any available variable to customize your data flow.",
-    "enablingConditions": [
-      {
-        "paramName": "processTrkknRepostHits",
-        "paramValue": true,
-        "type": "EQUALS"
-      }
-    ],
-    "defaultValue": "default"
-  },
-  {
-    "type": "LABEL",
-    "name": "label1",
-    "displayName": "________________________________________________________________________"
-  },
-  {
-    "type": "LABEL",
-    "name": "versionLabel",
-    "displayName": "template version: 2.0.0, FB: 1.0.0 (July 23rd, 2025)"
-  }
-]
-
-___TERMS_OF_SERVICE___
-
-By creating or modifying this file you agree to Google Tag Manager's Community
-Template Gallery Developer Terms of Service available at
-https://developers.google.com/tag-manager/gallery-tos (or such other URL as
-Google may provide), as modified from time to time.
 
 ___TESTS___
 
 scenarios:
-  - name: on EventModel model data tag triggers to send to Conversions API
-    code: |-
-      // Act
-      runCode(testConfigurationData);
+- name: on EventModel model data tag triggers to send to Conversions API
+  code: |-
+    // Act
+    runCode(testConfigurationData);
 
-      //Assert
-      assertApi('sendHttpRequest').wasCalledWith(requestEndpoint, actualSuccessCallback, requestHeaderOptions, JSON.stringify(requestData));
-      assertApi('gtmOnSuccess').wasCalled();
-  - name: on Event with common event schema triggers tag to send to Conversions API
-    code: |-
-      const preTagFireEventTime = Math.round(getTimestampMillis() / 1000);
-      const common_event_schema = {
-          event_name: testData.event_name,
-          client_id: 'client123',
-          ip_override: testData.ip_address,
-          user_agent: testData.user_agent,
-        };
-      mock('getAllEventData', () => {
-        return common_event_schema;
-      });
-
-      // Act
-      runCode(testConfigurationData);
-
-      //Assert
-      const actualTagFireEventTime = JSON.parse(httpBody).data[0].event_time;
-      assertThat(actualTagFireEventTime-preTagFireEventTime).isLessThan(1);
-      assertApi('gtmOnSuccess').wasCalled();
-  - name: on sending action source from Client, Tag overrides the preset configuration
-    code: |-
-      // Act
-      mock('getAllEventData', () => {
-        inputEventModel.action_source = testData.action_source;
-        return inputEventModel;
-      });
-      runCode(testConfigurationData);
-
-      //Assert
-      assertThat(JSON.parse(httpBody).data[0].action_source).isEqualTo(inputEventModel.action_source);
-  - name: on receiving event, if GTM Standard Event then Tag converts to corresponding
-      Conversions API Event, passes through as-is if otherwise
-    code: |-
-      // Act
-      mock('getAllEventData', () => {
-        inputEventModel.event_name = 'add_to_wishlist';
-        return inputEventModel;
-      });
-      runCode(testConfigurationData);
-
-      //Assert
-      assertThat(JSON.parse(httpBody).data[0].event_name).isEqualTo('AddToWishlist');
-
-
-      // Act
-      mock('getAllEventData', () => {
-        inputEventModel.event_name = 'custom_event';
-        return inputEventModel;
-      });
-      runCode(testConfigurationData);
-
-      //Assert
-      assertThat(JSON.parse(httpBody).data[0].event_name).isEqualTo('custom_event');
-
-      // Act
-      mock('getAllEventData', () => {
-        inputEventModel.event_name = 'generate_lead';
-        return inputEventModel;
-      });
-      runCode(testConfigurationData);
-
-      //Assert
-      assertThat(JSON.parse(httpBody).data[0].event_name).isEqualTo('Lead');
-  - name: On receiving event, hashes the the user_data fields if they are not already
-      hashed
-    code: |-
-      // Un-hashed raw email_address from Common Event Schema is hashed before posted to Conversions API.
-
-      // Act
-      mock('getAllEventData', () => {
-        inputEventModel = {};
-        inputEventModel['x-fb-ud-em'] = null;
-        inputEventModel['x-fb-ud-ph'] = null;
-        inputEventModel['x-fb-ud-fn'] = null;
-        inputEventModel['x-fb-ud-ln'] = null;
-        inputEventModel['x-fb-ud-ct'] = null;
-        inputEventModel['x-fb-ud-st'] = null;
-        inputEventModel['x-fb-ud-zp'] = null;
-        inputEventModel['x-fb-ud-country'] = null;
-        inputEventModel.user_data = {};
-        inputEventModel.user_data.email_address = 'foo@bar.com';
-        inputEventModel.user_data.phone_number = '1234567890';
-        inputEventModel.user_data.address = {};
-        inputEventModel.user_data.address.first_name = 'Foo';
-        inputEventModel.user_data.address.last_name = 'Bar';
-        inputEventModel.user_data.address.city = 'Menlo Park';
-        inputEventModel.user_data.address.region = 'ca';
-        inputEventModel.user_data.address.postal_code = '12345';
-        inputEventModel.user_data.address.country = 'usa';
-        return inputEventModel;
-      });
-      runCode(testConfigurationData);
-
-      //Assert
-      assertThat(JSON.parse(httpBody).data[0].user_data.em).isEqualTo(hashFunction('foo@bar.com'));
-      assertThat(JSON.parse(httpBody).data[0].user_data.ph).isEqualTo(hashFunction('1234567890'));
-      assertThat(JSON.parse(httpBody).data[0].user_data.fn).isEqualTo(hashFunction('Foo'));
-      assertThat(JSON.parse(httpBody).data[0].user_data.ln).isEqualTo(hashFunction('Bar'));
-      assertThat(JSON.parse(httpBody).data[0].user_data.ct).isEqualTo(hashFunction('Menlo Park'));
-      assertThat(JSON.parse(httpBody).data[0].user_data.st).isEqualTo(hashFunction('ca'));
-      assertThat(JSON.parse(httpBody).data[0].user_data.zp).isEqualTo(hashFunction('12345'));
-      assertThat(JSON.parse(httpBody).data[0].user_data.country).isEqualTo(hashFunction('usa'));
-
-      // Un-hashed raw email_address in mixed-case is converted to lowercase, hashed and posted to Conversions API.
-
-      // Act
-      mock('getAllEventData', () => {
-        inputEventModel.user_data.email_address = 'FOO@BAR.com';
-        return inputEventModel;
-      });
-      runCode(testConfigurationData);
-
-      //Assert
-      assertThat(JSON.parse(httpBody).data[0].user_data.em).isEqualTo(hashFunction('foo@bar.com'));
-
-
-      // Already sha256(email_address) field from GA4 schema, is unchanged, is posted as-is to Conversions API.
-
-      // Act
-      mock('getAllEventData', () => {
-        inputEventModel.user_data.email_address = hashFunction('foo@bar.com');
-        return inputEventModel;
-      });
-      runCode(testConfigurationData);
-
-      //Assert
-      assertThat(JSON.parse(httpBody).data[0].user_data.em).isEqualTo(hashFunction('foo@bar.com'));
-
-      // Already null email field from GA4 schema, is sent as null to Conversions API.
-
-      // Act
-      mock('getAllEventData', () => {
-        inputEventModel = {};
-        inputEventModel.user_data = {};
-        inputEventModel.user_data.sha256_email_address = null;
-        return inputEventModel;
-      });
-      runCode(testConfigurationData);
-
-      //Assert
-      assertThat(JSON.parse(httpBody).data[0].user_data.em).isNull();
-  - name: On receiving event with fbp/fbc cookies, it is sent to Conversions API
-    code: |-
-      // Act
-      mock('getAllEventData', () => {
-        inputEventModel['x-fb-ck-fbp'] = null;
-        inputEventModel['x-fb-ck-fbc'] = null;
-        return inputEventModel;
-      });
-
-      mock('getCookieValues', (cookieName) => {
-        if(cookieName === '_fbp') return ['fbp_cookie'];
-        if(cookieName === '_fbc') return ['fbc_cookie'];
-      });
-
-      runCode(testConfigurationData);
-
-      //Assert
-      assertThat(JSON.parse(httpBody).data[0].user_data.fbp).isEqualTo('fbp_cookie');
-      assertThat(JSON.parse(httpBody).data[0].user_data.fbc).isEqualTo('fbc_cookie');
-  - name: On receiving GA4 event, with the items info, tag parses them into Conversions
-      API schema
-    code: |-
-      // Act
-      let items = [
-          {
-            item_id: '1',
-            quantity: 5,
-            price: 123.45,
-          },
-          {
-            item_id: '2',
-            quantity: 10,
-            price: 123.45,
-          }
-        ];
-
-      mock('getAllEventData', () => {
-        inputEventModel = {};
-        inputEventModel['x-fb-cd-contents'] = null;
-        inputEventModel.items = items;
-        return inputEventModel;
-      });
-      runCode(testConfigurationData);
-
-      //Assert
-      let actual_contents = JSON.parse(httpBody).data[0].custom_data.contents;
-      assertThat(JSON.parse(httpBody).data[0].custom_data.contents.length).isEqualTo(items.length);
-      for( var i = 0; i < items.length; i++) {
-        assertThat(actual_contents[i].id).isEqualTo(items[i].item_id);
-        assertThat(actual_contents[i].item_price).isEqualTo(items[i].price);
-        assertThat(actual_contents[i].quantity).isEqualTo(items[i].quantity);
-      }
-
-      // Act
-      mock('getAllEventData', () => {
-        inputEventModel = {};
-        inputEventModel.items = null;
-        return inputEventModel;
-      });
-      runCode(testConfigurationData);
-
-      //Assert
-      assertThat(JSON.parse(httpBody).data[0].custom_data.contents).isUndefined();
-  - name: When address is missing it skips parsing the nested fields
-    code: |
-      mock('getAllEventData', () => {
-        inputEventModel['x-fb-ud-em'] = null;
-        inputEventModel['x-fb-ud-ph'] = null;
-        inputEventModel['x-fb-ud-fn'] = null;
-        inputEventModel['x-fb-ud-ln'] = null;
-        inputEventModel['x-fb-ud-ct'] = null;
-        inputEventModel['x-fb-ud-st'] = null;
-        inputEventModel['x-fb-ud-zp'] = null;
-        inputEventModel['x-fb-ud-country'] = null;
-        inputEventModel.user_data = {};
-        inputEventModel.user_data.email_address = 'foo@bar.com';
-        inputEventModel.user_data.phone_number = '1234567890';
-        return inputEventModel;
-      });
-
-      runCode(testConfigurationData);
-
-      assertThat(JSON.parse(httpBody).data[0].user_data.em).isEqualTo(hashFunction('foo@bar.com'));
-      assertThat(JSON.parse(httpBody).data[0].user_data.ph).isEqualTo(hashFunction('1234567890'));
-      assertThat(JSON.parse(httpBody).data[0].user_data.fn).isUndefined();
-      assertThat(JSON.parse(httpBody).data[0].user_data.ln).isUndefined();
-      assertThat(JSON.parse(httpBody).data[0].user_data.ct).isUndefined();
-      assertThat(JSON.parse(httpBody).data[0].user_data.st).isUndefined();
-      assertThat(JSON.parse(httpBody).data[0].user_data.zp).isUndefined();
-      assertThat(JSON.parse(httpBody).data[0].user_data.country).isUndefined();
-  - name: When parameters are undefined skip parsing
-    code: |
-      mock('getAllEventData', () => {
-        inputEventModel = {};
-        inputEventModel['x-fb-ud-em'] = null;
-        inputEventModel['x-fb-ud-ph'] = null;
-        inputEventModel['x-fb-ud-fn'] = null;
-        inputEventModel['x-fb-ud-ln'] = null;
-        inputEventModel['x-fb-ud-ct'] = null;
-        inputEventModel['x-fb-ud-st'] = null;
-        inputEventModel['x-fb-ud-zp'] = null;
-        inputEventModel['x-fb-ud-country'] = null;
-        inputEventModel['x-fb-ud-fb-login-id'] = null;
-        inputEventModel.user_data = {};
-        inputEventModel.user_data.email_address = undefined;
-        inputEventModel.user_data.phone_number = '1234567890';
-        inputEventModel.user_data.address = {};
-        inputEventModel.user_data.address.first_name = 'John';
-        inputEventModel.user_data.address.last_name = undefined;
-        inputEventModel.user_data.address.city = 'menlopark';
-        inputEventModel.user_data.address.region = 'ca';
-        inputEventModel.user_data.address.postal_code = '94025';
-        inputEventModel.user_data.address.country = 'usa';
-        inputEventModel.user_data.fb_login_id = 123456789;
-        return inputEventModel;
-      });
-
-      runCode(testConfigurationData);
-
-      assertThat(JSON.parse(httpBody).data[0].user_data.em).isUndefined();
-      assertThat(JSON.parse(httpBody).data[0].user_data.ph).isEqualTo(hashFunction('1234567890'));
-      assertThat(JSON.parse(httpBody).data[0].user_data.fn).isEqualTo(hashFunction('John'));
-      assertThat(JSON.parse(httpBody).data[0].user_data.ln).isUndefined();
-      assertThat(JSON.parse(httpBody).data[0].user_data.ct).isEqualTo(hashFunction('menlopark'));
-      assertThat(JSON.parse(httpBody).data[0].user_data.st).isEqualTo(hashFunction('ca'));
-      assertThat(JSON.parse(httpBody).data[0].user_data.zp).isEqualTo(hashFunction('94025'));
-      assertThat(JSON.parse(httpBody).data[0].user_data.country).isEqualTo(hashFunction('usa'));
-      assertThat(JSON.parse(httpBody).data[0].user_data.fb_login_id).isEqualTo(123456789);
-  - name: Set Meta cookies (fbp / fbc) if 'extendCookies' checkbox is ticked
-    code: |
-      runCode({
-        pixelId: '123',
-        apiAccessToken: 'abc',
-        testEventCode: 'test123',
-        actionSource: 'source123',
-        extendCookies: true
-      });
-
-      //Assert
-      assertApi('setCookie').wasCalled();
-      assertApi('gtmOnSuccess').wasCalled();
-  - name: Do not set Meta cookies (fbp / fbc) if 'extendCookies' checkbox is ticked
-    code: |
-      runCode({
-        pixelId: '123',
-        apiAccessToken: 'abc',
-        testEventCode: 'test123',
-        actionSource: 'source123',
-        extendCookies: false
-      });
-
-      //Assert
-      assertApi('setCookie').wasNotCalled();
-      assertApi('gtmOnSuccess').wasCalled();
-  - name: On receiving event, sets the data_processing_options field if present
-    code: |
-      mock('getAllEventData', () => {
-        inputEventModel.data_processing_options = testData.data_processing_options;
-        inputEventModel.data_processing_options_country = testData.data_processing_options_country;
-        inputEventModel.data_processing_options_state = testData.data_processing_options_state;
-        return inputEventModel;
-      });
-      runCode(testConfigurationData);
-
-      //Assert
-      assertThat(JSON.parse(httpBody).data[0].data_processing_options).isEqualTo(inputEventModel.data_processing_options);
-      assertThat(JSON.parse(httpBody).data[0].data_processing_options_country).isEqualTo(inputEventModel.data_processing_options_country);
-      assertThat(JSON.parse(httpBody).data[0].data_processing_options_state).isEqualTo(inputEventModel.data_processing_options_state);
-  - name: Set Event Enhancement Cookie (gtmeec) if `enableEventEnhancement` is ticked
-    code: |-
-      mock('getAllEventData', () => {
-        inputEventModel = {};
-        inputEventModel.event_name = 'purchase';
-        inputEventModel.user_data = {};
-        inputEventModel.user_data.email_address = 'foo@bar.com';
-        inputEventModel.user_data.phone_number = '1234567890';
-        return inputEventModel;
-      });
-
-      runCode(testConfigurationData);
-
-      runCode({
-        pixelId: '123',
-        apiAccessToken: 'abc',
-        testEventCode: 'test123',
-        actionSource: 'source123',
-        enableEventEnhancement: true,
-        extendCookies: false,
-        userDataAllowed: "allow",
-      });
-
-      let cookieOptions = {
-          domain: 'auto',
-          path: '/',
-          samesite: 'strict',
-          secure: true,
-          'max-age': 7776000, // default to 90 days
-          httpOnly: true
+    //Assert
+    assertApi('sendHttpRequest').wasCalledWith(requestEndpoint, actualSuccessCallback, requestHeaderOptions, JSON.stringify(requestData));
+    assertApi('gtmOnSuccess').wasCalled();
+- name: on Event with common event schema triggers tag to send to Conversions API
+  code: |-
+    const preTagFireEventTime = Math.round(getTimestampMillis() / 1000);
+    const common_event_schema = {
+        event_name: testData.event_name,
+        client_id: 'client123',
+        ip_override: testData.ip_address,
+        user_agent: testData.user_agent,
       };
+    mock('getAllEventData', () => {
+      return common_event_schema;
+    });
 
-      //Assert
-      assertApi('getCookieValues').wasCalledWith('_gtmeec', true);
-      assertApi('setCookie').wasCalledWith('_gtmeec', 'eyJlbSI6IjBjN2U2YTQwNTg2MmU0MDJlYjc2YTcwZjhhMjZmYzczMmQwN2MzMjkzMWU5ZmFlOWFiMTU4MjkxMWQyZThhM2IiLCJwaCI6ImM3NzVlN2I3NTdlZGU2MzBjZDBhYTExMTNiZDEwMjY2MWFiMzg4MjljYTUyYTY0MjJhYjc4Mjg2MmYyNjg2NDYifQ==', cookieOptions);
-      assertApi('gtmOnSuccess').wasCalled();
-  - name: Do not set Event Enhancement Cookie (gtmeec) if `enableEventEnhancement` is
-      not ticked
-    code: |-
-      runCode({
-        pixelId: '123',
-        apiAccessToken: 'abc',
-        testEventCode: 'test123',
-        actionSource: 'source123',
-        extendCookies: false,
-        enableEventEnhancement: false
-      });
+    // Act
+    runCode(testConfigurationData);
 
-      //Assert
-      assertApi('getCookieValues').wasNotCalledWith('_gtmeec', true);
-      assertApi('setCookie').wasNotCalled();
-      assertApi('gtmOnSuccess').wasCalled();
-  - name: Parse gtmeec Cookie and Enrich Event When `enableEventEnhancement` is ticked
-    code: |
-      mock('getAllEventData', () => {
-        inputEventModel = {};
-        inputEventModel.event_name = 'purchase';
-        inputEventModel.user_data = {};
-        return inputEventModel;
-      });
+    //Assert
+    const actualTagFireEventTime = JSON.parse(httpBody).data[0].event_time;
+    assertThat(actualTagFireEventTime-preTagFireEventTime).isLessThan(1);
+    assertApi('gtmOnSuccess').wasCalled();
+- name: on sending action source from Client, Tag overrides the preset configuration
+  code: |-
+    // Act
+    mock('getAllEventData', () => {
+      inputEventModel.action_source = testData.action_source;
+      return inputEventModel;
+    });
+    runCode(testConfigurationData);
 
-      runCode(testConfigurationData);
+    //Assert
+    assertThat(JSON.parse(httpBody).data[0].action_source).isEqualTo(inputEventModel.action_source);
+- name: on receiving event, if GTM Standard Event then Tag converts to corresponding
+    Conversions API Event, passes through as-is if otherwise
+  code: |-
+    // Act
+    mock('getAllEventData', () => {
+      inputEventModel.event_name = 'add_to_wishlist';
+      return inputEventModel;
+    });
+    runCode(testConfigurationData);
 
-      const cookieName = '_gtmeec';
-      const val = true;
+    //Assert
+    assertThat(JSON.parse(httpBody).data[0].event_name).isEqualTo('AddToWishlist');
 
-      mock('getCookieValues', (cookieName, val) => {
-        return ['eyJlbSI6ImVlMjc4OTQzZGU4NGU1ZDYyNDM1NzhlZTFhMTA1N2JjY2UwZTUwZGFhZDk3NTVmNDVkZmE2NGI2MGIxM2JjNWQiLCJwaCI6ImM3NzVlN2I3NTdlZGU2MzBjZDBhYTExMTNiZDEwMjY2MWFiMzg4MjljYTUyYTY0MjJhYjc4Mjg2MmYyNjg2NDYifQ=='];
-      });
 
-      runCode({
-        pixelId: '123',
-        apiAccessToken: 'abc',
-        testEventCode: 'test123',
-        actionSource: 'source123',
-        enableEventEnhancement: true,
-        extendCookies: false
-      });
+    // Act
+    mock('getAllEventData', () => {
+      inputEventModel.event_name = 'custom_event';
+      return inputEventModel;
+    });
+    runCode(testConfigurationData);
 
-      let cookieOptions = {
-          domain: 'auto',
-          path: '/',
-          samesite: 'strict',
-          secure: true,
-          'max-age': 7776000, // default to 90 days
-          httpOnly: true
-      };
+    //Assert
+    assertThat(JSON.parse(httpBody).data[0].event_name).isEqualTo('custom_event');
 
-      // Assert
-      assertApi('getCookieValues').wasCalledWith('_gtmeec', true);
-      assertApi('setCookie').wasCalledWith('_gtmeec', 'eyJlbSI6ImVlMjc4OTQzZGU4NGU1ZDYyNDM1NzhlZTFhMTA1N2JjY2UwZTUwZGFhZDk3NTVmNDVkZmE2NGI2MGIxM2JjNWQiLCJwaCI6ImM3NzVlN2I3NTdlZGU2MzBjZDBhYTExMTNiZDEwMjY2MWFiMzg4MjljYTUyYTY0MjJhYjc4Mjg2MmYyNjg2NDYifQ==', cookieOptions);
-      assertApi('gtmOnSuccess').wasCalled();
+    // Act
+    mock('getAllEventData', () => {
+      inputEventModel.event_name = 'generate_lead';
+      return inputEventModel;
+    });
+    runCode(testConfigurationData);
 
-      assertThat(JSON.parse(httpBody).data[0].user_data.em).isEqualTo('ee278943de84e5d6243578ee1a1057bcce0e50daad9755f45dfa64b60b13bc5d');
-      assertThat(JSON.parse(httpBody).data[0].user_data.ph).isEqualTo('c775e7b757ede630cd0aa1113bd102661ab38829ca52a6422ab782862f268646');
-  - name: Grab the hashed email and phone number, check that isn't double hashed
-    code: |
-      mock("getAllEventData", () => {
-        inputEventModel = {};
-        inputEventModel.user_data = {};
-        inputEventModel.user_data.sha256_email_address = "0c7e6a405862e402eb76a70f8a26fc732d07c32931e9fae9ab1582911d2e8a3b";
-        inputEventModel.user_data.sha256_phone_number = "c775e7b757ede630cd0aa1113bd102661ab38829ca52a6422ab782862f268646";
-        return inputEventModel;
-      });
+    //Assert
+    assertThat(JSON.parse(httpBody).data[0].event_name).isEqualTo('Lead');
+- name: On receiving event, hashes the the user_data fields if they are not already
+    hashed
+  code: |-
+    // Un-hashed raw email_address from Common Event Schema is hashed before posted to Conversions API.
 
-      runCode(testConfigurationData);
+    // Act
+    mock('getAllEventData', () => {
+      inputEventModel = {};
+      inputEventModel['x-fb-ud-em'] = null;
+      inputEventModel['x-fb-ud-ph'] = null;
+      inputEventModel['x-fb-ud-fn'] = null;
+      inputEventModel['x-fb-ud-ln'] = null;
+      inputEventModel['x-fb-ud-ct'] = null;
+      inputEventModel['x-fb-ud-st'] = null;
+      inputEventModel['x-fb-ud-zp'] = null;
+      inputEventModel['x-fb-ud-country'] = null;
+      inputEventModel.user_data = {};
+      inputEventModel.user_data.email_address = 'foo@bar.com';
+      inputEventModel.user_data.phone_number = '1234567890';
+      inputEventModel.user_data.address = {};
+      inputEventModel.user_data.address.first_name = 'Foo';
+      inputEventModel.user_data.address.last_name = 'Bar';
+      inputEventModel.user_data.address.city = 'Menlo Park';
+      inputEventModel.user_data.address.region = 'ca';
+      inputEventModel.user_data.address.postal_code = '12345';
+      inputEventModel.user_data.address.country = 'usa';
+      return inputEventModel;
+    });
+    runCode(testConfigurationData);
 
-      //Assert
-      assertThat(JSON.parse(httpBody).data[0].user_data.em).isEqualTo(hashFunction("0c7e6a405862e402eb76a70f8a26fc732d07c32931e9fae9ab1582911d2e8a3b"));
-      assertThat(JSON.parse(httpBody).data[0].user_data.ph).isEqualTo(hashFunction("c775e7b757ede630cd0aa1113bd102661ab38829ca52a6422ab782862f268646"));
-  - name: Do not pass the email if User Data Tickbox isn't clicked
-    code: |-
-      mock("getAllEventData", () => {
-        inputEventModel = {};
-        inputEventModel.user_data = {};
-        inputEventModel.user_data.sha256_email_address = "0c7e6a405862e402eb76a70f8a26fc732d07c32931e9fae9ab1582911d2e8a3b";
-        inputEventModel.user_data.sha256_phone_number = "c775e7b757ede630cd0aa1113bd102661ab38829ca52a6422ab782862f268646";
-        return inputEventModel;
-      });
-      testConfigurationData.userDataAllowed = undefined;
-      runCode(testConfigurationData);
+    //Assert
+    assertThat(JSON.parse(httpBody).data[0].user_data.em).isEqualTo(hashFunction('foo@bar.com'));
+    assertThat(JSON.parse(httpBody).data[0].user_data.ph).isEqualTo(hashFunction('1234567890'));
+    assertThat(JSON.parse(httpBody).data[0].user_data.fn).isEqualTo(hashFunction('Foo'));
+    assertThat(JSON.parse(httpBody).data[0].user_data.ln).isEqualTo(hashFunction('Bar'));
+    assertThat(JSON.parse(httpBody).data[0].user_data.ct).isEqualTo(hashFunction('Menlo Park'));
+    assertThat(JSON.parse(httpBody).data[0].user_data.st).isEqualTo(hashFunction('ca'));
+    assertThat(JSON.parse(httpBody).data[0].user_data.zp).isEqualTo(hashFunction('12345'));
+    assertThat(JSON.parse(httpBody).data[0].user_data.country).isEqualTo(hashFunction('usa'));
 
-      //Assert
-      assertThat(JSON.parse(httpBody).data[0].user_data.em).isUndefined();
-      assertThat(JSON.parse(httpBody).data[0].user_data.ph).isUndefined();
+    // Un-hashed raw email_address in mixed-case is converted to lowercase, hashed and posted to Conversions API.
+
+    // Act
+    mock('getAllEventData', () => {
+      inputEventModel.user_data.email_address = 'FOO@BAR.com';
+      return inputEventModel;
+    });
+    runCode(testConfigurationData);
+
+    //Assert
+    assertThat(JSON.parse(httpBody).data[0].user_data.em).isEqualTo(hashFunction('foo@bar.com'));
+
+
+    // Already sha256(email_address) field from GA4 schema, is unchanged, is posted as-is to Conversions API.
+
+    // Act
+    mock('getAllEventData', () => {
+      inputEventModel.user_data.email_address = hashFunction('foo@bar.com');
+      return inputEventModel;
+    });
+    runCode(testConfigurationData);
+
+    //Assert
+    assertThat(JSON.parse(httpBody).data[0].user_data.em).isEqualTo(hashFunction('foo@bar.com'));
+
+    // Already null email field from GA4 schema, is sent as null to Conversions API.
+
+    // Act
+    mock('getAllEventData', () => {
+      inputEventModel = {};
+      inputEventModel.user_data = {};
+      inputEventModel.user_data.sha256_email_address = null;
+      return inputEventModel;
+    });
+    runCode(testConfigurationData);
+
+    //Assert
+    assertThat(JSON.parse(httpBody).data[0].user_data.em).isNull();
+- name: On receiving event with fbp/fbc cookies, it is sent to Conversions API
+  code: |-
+    // Act
+    mock('getAllEventData', () => {
+      inputEventModel['x-fb-ck-fbp'] = null;
+      inputEventModel['x-fb-ck-fbc'] = null;
+      return inputEventModel;
+    });
+
+    mock('getCookieValues', (cookieName) => {
+      if(cookieName === '_fbp') return ['fbp_cookie'];
+      if(cookieName === '_fbc') return ['fbc_cookie'];
+    });
+
+    runCode(testConfigurationData);
+
+    //Assert
+    assertThat(JSON.parse(httpBody).data[0].user_data.fbp).isEqualTo('fbp_cookie');
+    assertThat(JSON.parse(httpBody).data[0].user_data.fbc).isEqualTo('fbc_cookie');
+- name: On receiving GA4 event, with the items info, tag parses them into Conversions
+    API schema
+  code: |-
+    // Act
+    let items = [
+        {
+          item_id: '1',
+          quantity: 5,
+          price: 123.45,
+        },
+        {
+          item_id: '2',
+          quantity: 10,
+          price: 123.45,
+        }
+      ];
+
+    mock('getAllEventData', () => {
+      inputEventModel = {};
+      inputEventModel['x-fb-cd-contents'] = null;
+      inputEventModel.items = items;
+      return inputEventModel;
+    });
+    runCode(testConfigurationData);
+
+    //Assert
+    let actual_contents = JSON.parse(httpBody).data[0].custom_data.contents;
+    assertThat(JSON.parse(httpBody).data[0].custom_data.contents.length).isEqualTo(items.length);
+    for( var i = 0; i < items.length; i++) {
+      assertThat(actual_contents[i].id).isEqualTo(items[i].item_id);
+      assertThat(actual_contents[i].item_price).isEqualTo(items[i].price);
+      assertThat(actual_contents[i].quantity).isEqualTo(items[i].quantity);
+    }
+
+    // Act
+    mock('getAllEventData', () => {
+      inputEventModel = {};
+      inputEventModel.items = null;
+      return inputEventModel;
+    });
+    runCode(testConfigurationData);
+
+    //Assert
+    assertThat(JSON.parse(httpBody).data[0].custom_data.contents).isUndefined();
+- name: When address is missing it skips parsing the nested fields
+  code: |
+    mock('getAllEventData', () => {
+      inputEventModel['x-fb-ud-em'] = null;
+      inputEventModel['x-fb-ud-ph'] = null;
+      inputEventModel['x-fb-ud-fn'] = null;
+      inputEventModel['x-fb-ud-ln'] = null;
+      inputEventModel['x-fb-ud-ct'] = null;
+      inputEventModel['x-fb-ud-st'] = null;
+      inputEventModel['x-fb-ud-zp'] = null;
+      inputEventModel['x-fb-ud-country'] = null;
+      inputEventModel.user_data = {};
+      inputEventModel.user_data.email_address = 'foo@bar.com';
+      inputEventModel.user_data.phone_number = '1234567890';
+      return inputEventModel;
+    });
+
+    runCode(testConfigurationData);
+
+    assertThat(JSON.parse(httpBody).data[0].user_data.em).isEqualTo(hashFunction('foo@bar.com'));
+    assertThat(JSON.parse(httpBody).data[0].user_data.ph).isEqualTo(hashFunction('1234567890'));
+    assertThat(JSON.parse(httpBody).data[0].user_data.fn).isUndefined();
+    assertThat(JSON.parse(httpBody).data[0].user_data.ln).isUndefined();
+    assertThat(JSON.parse(httpBody).data[0].user_data.ct).isUndefined();
+    assertThat(JSON.parse(httpBody).data[0].user_data.st).isUndefined();
+    assertThat(JSON.parse(httpBody).data[0].user_data.zp).isUndefined();
+    assertThat(JSON.parse(httpBody).data[0].user_data.country).isUndefined();
+- name: When parameters are undefined skip parsing
+  code: |
+    mock('getAllEventData', () => {
+      inputEventModel = {};
+      inputEventModel['x-fb-ud-em'] = null;
+      inputEventModel['x-fb-ud-ph'] = null;
+      inputEventModel['x-fb-ud-fn'] = null;
+      inputEventModel['x-fb-ud-ln'] = null;
+      inputEventModel['x-fb-ud-ct'] = null;
+      inputEventModel['x-fb-ud-st'] = null;
+      inputEventModel['x-fb-ud-zp'] = null;
+      inputEventModel['x-fb-ud-country'] = null;
+      inputEventModel['x-fb-ud-fb-login-id'] = null;
+      inputEventModel.user_data = {};
+      inputEventModel.user_data.email_address = undefined;
+      inputEventModel.user_data.phone_number = '1234567890';
+      inputEventModel.user_data.address = {};
+      inputEventModel.user_data.address.first_name = 'John';
+      inputEventModel.user_data.address.last_name = undefined;
+      inputEventModel.user_data.address.city = 'menlopark';
+      inputEventModel.user_data.address.region = 'ca';
+      inputEventModel.user_data.address.postal_code = '94025';
+      inputEventModel.user_data.address.country = 'usa';
+      inputEventModel.user_data.fb_login_id = 123456789;
+      return inputEventModel;
+    });
+
+    runCode(testConfigurationData);
+
+    assertThat(JSON.parse(httpBody).data[0].user_data.em).isUndefined();
+    assertThat(JSON.parse(httpBody).data[0].user_data.ph).isEqualTo(hashFunction('1234567890'));
+    assertThat(JSON.parse(httpBody).data[0].user_data.fn).isEqualTo(hashFunction('John'));
+    assertThat(JSON.parse(httpBody).data[0].user_data.ln).isUndefined();
+    assertThat(JSON.parse(httpBody).data[0].user_data.ct).isEqualTo(hashFunction('menlopark'));
+    assertThat(JSON.parse(httpBody).data[0].user_data.st).isEqualTo(hashFunction('ca'));
+    assertThat(JSON.parse(httpBody).data[0].user_data.zp).isEqualTo(hashFunction('94025'));
+    assertThat(JSON.parse(httpBody).data[0].user_data.country).isEqualTo(hashFunction('usa'));
+    assertThat(JSON.parse(httpBody).data[0].user_data.fb_login_id).isEqualTo(123456789);
+- name: Set Meta cookies (fbp / fbc) if 'extendCookies' checkbox is ticked
+  code: |
+    runCode({
+      pixelId: '123',
+      apiAccessToken: 'abc',
+      testEventCode: 'test123',
+      actionSource: 'source123',
+      extendCookies: true
+    });
+
+    //Assert
+    assertApi('setCookie').wasCalled();
+    assertApi('gtmOnSuccess').wasCalled();
+- name: Do not set Meta cookies (fbp / fbc) if 'extendCookies' checkbox is ticked
+  code: |
+    runCode({
+      pixelId: '123',
+      apiAccessToken: 'abc',
+      testEventCode: 'test123',
+      actionSource: 'source123',
+      extendCookies: false
+    });
+
+    //Assert
+    assertApi('setCookie').wasNotCalled();
+    assertApi('gtmOnSuccess').wasCalled();
+- name: On receiving event, sets the data_processing_options field if present
+  code: |
+    mock('getAllEventData', () => {
+      inputEventModel.data_processing_options = testData.data_processing_options;
+      inputEventModel.data_processing_options_country = testData.data_processing_options_country;
+      inputEventModel.data_processing_options_state = testData.data_processing_options_state;
+      return inputEventModel;
+    });
+    runCode(testConfigurationData);
+
+    //Assert
+    assertThat(JSON.parse(httpBody).data[0].data_processing_options).isEqualTo(inputEventModel.data_processing_options);
+    assertThat(JSON.parse(httpBody).data[0].data_processing_options_country).isEqualTo(inputEventModel.data_processing_options_country);
+    assertThat(JSON.parse(httpBody).data[0].data_processing_options_state).isEqualTo(inputEventModel.data_processing_options_state);
+- name: Set Event Enhancement Cookie (gtmeec) if `enableEventEnhancement` is ticked
+  code: |-
+    mock('getAllEventData', () => {
+      inputEventModel = {};
+      inputEventModel.event_name = 'purchase';
+      inputEventModel.user_data = {};
+      inputEventModel.user_data.email_address = 'foo@bar.com';
+      inputEventModel.user_data.phone_number = '1234567890';
+      return inputEventModel;
+    });
+
+    runCode(testConfigurationData);
+
+    runCode({
+      pixelId: '123',
+      apiAccessToken: 'abc',
+      testEventCode: 'test123',
+      actionSource: 'source123',
+      enableEventEnhancement: true,
+      extendCookies: false,
+      userDataAllowed: "allow",
+    });
+
+    let cookieOptions = {
+        domain: 'auto',
+        path: '/',
+        samesite: 'strict',
+        secure: true,
+        'max-age': 7776000, // default to 90 days
+        httpOnly: true
+    };
+
+    //Assert
+    assertApi('getCookieValues').wasCalledWith('_gtmeec', true);
+    assertApi('setCookie').wasCalledWith('_gtmeec', 'eyJlbSI6IjBjN2U2YTQwNTg2MmU0MDJlYjc2YTcwZjhhMjZmYzczMmQwN2MzMjkzMWU5ZmFlOWFiMTU4MjkxMWQyZThhM2IiLCJwaCI6ImM3NzVlN2I3NTdlZGU2MzBjZDBhYTExMTNiZDEwMjY2MWFiMzg4MjljYTUyYTY0MjJhYjc4Mjg2MmYyNjg2NDYifQ==', cookieOptions);
+    assertApi('gtmOnSuccess').wasCalled();
+- name: Do not set Event Enhancement Cookie (gtmeec) if `enableEventEnhancement` is
+    not ticked
+  code: |-
+    runCode({
+      pixelId: '123',
+      apiAccessToken: 'abc',
+      testEventCode: 'test123',
+      actionSource: 'source123',
+      extendCookies: false,
+      enableEventEnhancement: false
+    });
+
+    //Assert
+    assertApi('getCookieValues').wasNotCalledWith('_gtmeec', true);
+    assertApi('setCookie').wasNotCalled();
+    assertApi('gtmOnSuccess').wasCalled();
+- name: Parse gtmeec Cookie and Enrich Event When `enableEventEnhancement` is ticked
+  code: |
+    mock('getAllEventData', () => {
+      inputEventModel = {};
+      inputEventModel.event_name = 'purchase';
+      inputEventModel.user_data = {};
+      return inputEventModel;
+    });
+
+    runCode(testConfigurationData);
+
+    const cookieName = '_gtmeec';
+    const val = true;
+
+    mock('getCookieValues', (cookieName, val) => {
+      return ['eyJlbSI6ImVlMjc4OTQzZGU4NGU1ZDYyNDM1NzhlZTFhMTA1N2JjY2UwZTUwZGFhZDk3NTVmNDVkZmE2NGI2MGIxM2JjNWQiLCJwaCI6ImM3NzVlN2I3NTdlZGU2MzBjZDBhYTExMTNiZDEwMjY2MWFiMzg4MjljYTUyYTY0MjJhYjc4Mjg2MmYyNjg2NDYifQ=='];
+    });
+
+    runCode({
+      pixelId: '123',
+      apiAccessToken: 'abc',
+      testEventCode: 'test123',
+      actionSource: 'source123',
+      enableEventEnhancement: true,
+      extendCookies: false
+    });
+
+    let cookieOptions = {
+        domain: 'auto',
+        path: '/',
+        samesite: 'strict',
+        secure: true,
+        'max-age': 7776000, // default to 90 days
+        httpOnly: true
+    };
+
+    // Assert
+    assertApi('getCookieValues').wasCalledWith('_gtmeec', true);
+    assertApi('setCookie').wasCalledWith('_gtmeec', 'eyJlbSI6ImVlMjc4OTQzZGU4NGU1ZDYyNDM1NzhlZTFhMTA1N2JjY2UwZTUwZGFhZDk3NTVmNDVkZmE2NGI2MGIxM2JjNWQiLCJwaCI6ImM3NzVlN2I3NTdlZGU2MzBjZDBhYTExMTNiZDEwMjY2MWFiMzg4MjljYTUyYTY0MjJhYjc4Mjg2MmYyNjg2NDYifQ==', cookieOptions);
+    assertApi('gtmOnSuccess').wasCalled();
+
+    assertThat(JSON.parse(httpBody).data[0].user_data.em).isEqualTo('ee278943de84e5d6243578ee1a1057bcce0e50daad9755f45dfa64b60b13bc5d');
+    assertThat(JSON.parse(httpBody).data[0].user_data.ph).isEqualTo('c775e7b757ede630cd0aa1113bd102661ab38829ca52a6422ab782862f268646');
+- name: Grab the hashed email and phone number, check that isn't double hashed
+  code: |
+    mock("getAllEventData", () => {
+      inputEventModel = {};
+      inputEventModel.user_data = {};
+      inputEventModel.user_data.sha256_email_address = "0c7e6a405862e402eb76a70f8a26fc732d07c32931e9fae9ab1582911d2e8a3b";
+      inputEventModel.user_data.sha256_phone_number = "c775e7b757ede630cd0aa1113bd102661ab38829ca52a6422ab782862f268646";
+      return inputEventModel;
+    });
+
+    runCode(testConfigurationData);
+
+    //Assert
+    assertThat(JSON.parse(httpBody).data[0].user_data.em).isEqualTo(hashFunction("0c7e6a405862e402eb76a70f8a26fc732d07c32931e9fae9ab1582911d2e8a3b"));
+    assertThat(JSON.parse(httpBody).data[0].user_data.ph).isEqualTo(hashFunction("c775e7b757ede630cd0aa1113bd102661ab38829ca52a6422ab782862f268646"));
+- name: Do not pass the email if User Data Tickbox isn't clicked
+  code: |-
+    mock("getAllEventData", () => {
+      inputEventModel = {};
+      inputEventModel.user_data = {};
+      inputEventModel.user_data.sha256_email_address = "0c7e6a405862e402eb76a70f8a26fc732d07c32931e9fae9ab1582911d2e8a3b";
+      inputEventModel.user_data.sha256_phone_number = "c775e7b757ede630cd0aa1113bd102661ab38829ca52a6422ab782862f268646";
+      return inputEventModel;
+    });
+    testConfigurationData.userDataAllowed = undefined;
+    runCode(testConfigurationData);
+
+    //Assert
+    assertThat(JSON.parse(httpBody).data[0].user_data.em).isUndefined();
+    assertThat(JSON.parse(httpBody).data[0].user_data.ph).isUndefined();
 setup: |-
   // Arrange
   const JSON = require('JSON');
@@ -1872,3 +1872,18 @@ setup: |-
     httpBody = body;
     actualSuccessCallback(200, {}, '');
   });
+
+
+___NOTES___
+
+Based on the official template: https://github.com/facebookincubator/ConversionsAPI-Tag-for-GoogleTagManager version: 1.0.0 (July 23rd, 2025)
+Added Features:
+1. anonymisation of IP by default
+2. custom event mapping
+3. custom parameter mapping. 
+4. Support for FB Repost
+5. Support for multiple Pixel Ids
+
+With this template you do not need to follow FB namings.
+
+
