@@ -1,3 +1,10 @@
+# 2.1.0
+
+- NEW: updated to newest FB API: v25.
+- NEW: added upload_tag support
+- FIX: custom parameter override did not work
+- FIX: encoding Url parameters
+
 # 2.0.0
 
 - BREAKING CHANGE: Enable Meta to track User Data: a select instead of checkbox. After update: double check your settings.

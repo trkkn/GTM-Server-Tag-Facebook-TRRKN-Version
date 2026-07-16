@@ -66,9 +66,23 @@ ___TEMPLATE_PARAMETERS___
     "help": "Code used to verify that your server events are received correctly by Conversions API. Use this code to test your server events in the Test Events feature in Events Manager. See \u003ca href\u003d\"https://developers.facebook.com/docs/marketing-api/conversions-api/using-the-api#testEvents\"\u003e Test Events Tool\u003c/a\u003e for an example."
   },
   {
+    "type": "TEXT",
+    "name": "uploadTag",
+    "displayName": "Upload Tag (Offline) (Fallback)",
+    "simpleValueType": true,
+    "help": "A string used to group offline events into a batch upload. CAUTION: the value here will only be used, if upload_tag is NOT defined in event data. This is useful for tracking and organizing offline conversion data sent through the Conversions API. Only applicable for offline action sources (physical_store).",
+    "enablingConditions": [
+      {
+        "paramName": "actionSource",
+        "paramValue": "physical_store",
+        "type": "EQUALS"
+      }
+    ]
+  },
+  {
     "type": "SELECT",
     "name": "actionSource",
-    "displayName": "Action Source",
+    "displayName": "Action Source (Fallback)",
     "macrosInSelect": false,
     "selectItems": [
       {
@@ -105,7 +119,7 @@ ___TEMPLATE_PARAMETERS___
       }
     ],
     "simpleValueType": true,
-    "help": "This field allows you to specify where your conversions occurred. Knowing where your events took place helps ensure your ads go to the right people. See \u003ca href\u003d\"https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/server-event#action-source\"\u003ehere\u003c/a\u003e for more information."
+    "help": "This field allows you to specify where your conversions occurred. CAUTION: the value here will only be used, if action_source is NOT defined in event data. Knowing where your events took place helps ensure your ads go to the right people. See \u003ca href\u003d\"https://developers.facebook.com/docs/marketing-api/conversions-api/parameters/server-event#action-source\"\u003ehere\u003c/a\u003e for more information."
   },
   {
     "type": "CHECKBOX",
@@ -299,6 +313,10 @@ ___TEMPLATE_PARAMETERS___
           {
             "value": "data_processing_options_state",
             "displayValue": "data_processing_options_state"
+          },
+          {
+            "value": "value",
+            "displayValue": "value"
           }
         ]
       },
@@ -374,7 +392,7 @@ ___TEMPLATE_PARAMETERS___
   {
     "type": "LABEL",
     "name": "versionLabel",
-    "displayName": "template version: 2.0.0, FB: 1.0.0 (July 23rd, 2025)"
+    "displayName": "template version: 2.1.0, FB: 24 April 2026"
   }
 ]
 
@@ -401,8 +419,8 @@ const log = require("logToConsole");
 
 // Constants
 const API_ENDPOINT = "https://graph.facebook.com";
-const API_VERSION = "v16.0";
-const PARTNER_AGENT = "trkkn-2.0.0";
+const API_VERSION = "v25.0";
+const PARTNER_AGENT = "trkkn-2.1.0";
 const GTM_EVENT_MAPPINGS = {
   add_payment_info: "AddPaymentInfo",
   add_to_cart: "AddToCart",
@@ -416,8 +434,6 @@ const GTM_EVENT_MAPPINGS = {
   view_item: "ViewContent",
   sign_up: "CompleteRegistration",
 };
-
-const eventModel = getAllEventData();
 
 /* TRKKN Custom 1*/
 /* HOW TO UPDATE
@@ -518,13 +534,17 @@ function getMetaEventName(gtmEventName) {
   return eventModel.fbEventName || GTM_EVENT_MAPPINGS[gtmEventName] || gtmEventName;
 }
 
+const eventModel = getAllEventData();
 const event = {};
 event.event_name = getMetaEventName(eventModel.event_name);
 event.event_time = eventModel.event_time || Math.round(getTimestampMillis() / 1000);
 event.event_id = FB_PARAMS_MAPPINGS.event_id || eventModel.event_id;
-event.event_source_url = eventModel.page_location;
 if (eventModel.action_source || data.actionSource) {
   event.action_source = eventModel.action_source ? eventModel.action_source : data.actionSource;
+}
+const OFFLINE_ACTION_SOURCES = ["physical_store"];
+if (OFFLINE_ACTION_SOURCES.indexOf(event.action_source) === -1) {
+  event.event_source_url = eventModel.page_location;
 }
 event.referrer_url = FB_PARAMS_MAPPINGS.page_referrer || eventModel.page_referrer;
 
@@ -610,12 +630,19 @@ if (data.processTrkknRepostHits) {
 
   if (repostFbData) {
     for (const property in repostFbData) {
+      if (property === "event_name") {
+        GTM_EVENT_MAPPINGS[eventModel.event_name] = repostFbData.event_name;
+        continue;
+      }
+
       if (valueIsFilled(repostFbData[property])) {
         event.custom_data[property] = repostFbData[property];
         FB_PARAMS_MAPPINGS[property] = repostFbData[property];
       }
     }
   }
+  // reprocess event name
+  event.event_name = getMetaEventName(eventModel.event_name);
 }
 
 /* TRKKN Custom facebook event repost END*/
@@ -635,20 +662,24 @@ if (data.customParameterMapping) {
 
 /* TRKKN Custom 1.5 END*/
 
-event.custom_data.currency = FB_PARAMS_MAPPINGS.currency || eventModel.currency;
-event.custom_data.value = FB_PARAMS_MAPPINGS.value || eventModel.value;
-event.custom_data.search_string = FB_PARAMS_MAPPINGS.search_string || eventModel.search_term;
-event.custom_data.order_id = FB_PARAMS_MAPPINGS.order_id || eventModel.transaction_id;
-event.custom_data.content_category =
-  FB_PARAMS_MAPPINGS.content_category || eventModel["x-fb-cd-content_category"];
-event.custom_data.content_ids = FB_PARAMS_MAPPINGS.content_ids || eventModel["x-fb-cd-content_ids"];
-event.custom_data.content_name =
-  FB_PARAMS_MAPPINGS.content_name || eventModel["x-fb-cd-content_name"];
-event.custom_data.content_type =
-  FB_PARAMS_MAPPINGS.content_type || eventModel["x-fb-cd-content_type"];
+event.custom_data.currency = getValue("currency", FB_PARAMS_MAPPINGS, eventModel, event);
+event.custom_data.value = getValue("value", FB_PARAMS_MAPPINGS, eventModel, event);
+event.custom_data.value = getValue("value", FB_PARAMS_MAPPINGS, eventModel, event);
+event.custom_data.search_string = getValue("search_string", FB_PARAMS_MAPPINGS, eventModel, event);
+event.custom_data.order_id = getValue("order_id", FB_PARAMS_MAPPINGS, eventModel, event);
+event.custom_data.content_category = getValue(
+  "content_category",
+  FB_PARAMS_MAPPINGS,
+  eventModel,
+  event
+);
+event.custom_data.content_ids = getValue("content_ids", FB_PARAMS_MAPPINGS, eventModel, event);
+event.custom_data.content_name = getValue("content_name", FB_PARAMS_MAPPINGS, eventModel, event);
+event.custom_data.content_type = getValue("content_type", FB_PARAMS_MAPPINGS, eventModel, event);
 const invalidString = "[object Object]";
 event.custom_data.contents =
   FB_PARAMS_MAPPINGS.contents ||
+  event.custom_data.contents ||
   (eventModel["x-fb-cd-contents"] != null &&
   eventModel["x-fb-cd-contents"].indexOf(invalidString) == 0
     ? null
@@ -672,19 +703,34 @@ const customProperties =
 for (const property in customProperties) {
   event.custom_data[property] = customProperties[property];
 }
-event.custom_data.num_items = FB_PARAMS_MAPPINGS.num_items || eventModel["x-fb-cd-num_items"];
-event.custom_data.predicted_ltv =
-  FB_PARAMS_MAPPINGS.predicted_ltv || eventModel["x-fb-cd-predicted_ltv"];
-event.custom_data.status = FB_PARAMS_MAPPINGS.status || eventModel["x-fb-cd-status"];
-event.custom_data.delivery_category =
-  FB_PARAMS_MAPPINGS.delivery_category || eventModel["x-fb-cd-delivery_category"];
+event.custom_data.num_items = getValue("num_items", FB_PARAMS_MAPPINGS, eventModel, event);
 
-event.data_processing_options =
-  FB_PARAMS_MAPPINGS.data_processing_options || eventModel.data_processing_options;
-event.data_processing_options_country =
-  FB_PARAMS_MAPPINGS.data_processing_options_country || eventModel.data_processing_options_country;
-event.data_processing_options_state =
-  FB_PARAMS_MAPPINGS.data_processing_options_state || eventModel.data_processing_options_state;
+event.custom_data.predicted_ltv = getValue("predicted_ltv", FB_PARAMS_MAPPINGS, eventModel, event);
+event.custom_data.status = getValue("status", FB_PARAMS_MAPPINGS, eventModel, event);
+event.custom_data.delivery_category = getValue(
+  "delivery_category",
+  FB_PARAMS_MAPPINGS,
+  eventModel,
+  event
+);
+event.data_processing_options = getValue(
+  "data_processing_options",
+  FB_PARAMS_MAPPINGS,
+  eventModel,
+  event
+);
+event.data_processing_options_country = getValue(
+  "data_processing_options_country",
+  FB_PARAMS_MAPPINGS,
+  eventModel,
+  event
+);
+event.data_processing_options_state = getValue(
+  "data_processing_options_state",
+  FB_PARAMS_MAPPINGS,
+  eventModel,
+  event
+);
 
 function setGtmEecCookie(value) {
   const cookieJsonStr = JSON.stringify(value);
@@ -846,8 +892,14 @@ function sendEventToCapiServers(pixel_event, pixel_id, api_access_token, callbac
       : data.testEventCode;
   }
 
-  const routeParams = "events?access_token=" + api_access_token;
-  const graphEndpoint = [API_ENDPOINT, API_VERSION, pixel_id, routeParams].join("/");
+  if (eventModel.upload_tag || data.uploadTag) {
+    eventRequest.upload_tag = eventModel.upload_tag ? eventModel.upload_tag : data.uploadTag;
+  }
+
+  const routeParams = "events?access_token=" + decodeUriComponent(api_access_token);
+  const graphEndpoint = [API_ENDPOINT, API_VERSION, decodeUriComponent(pixel_id), routeParams].join(
+    "/"
+  );
 
   const requestHeaders = { headers: { "content-type": "application/json" }, method: "POST" };
   return sendHttpRequest(
@@ -945,12 +997,57 @@ function getIPAddress() {
 }
 
 function anonymizeIP(ip) {
-  if (ip.indexOf(".") >= 0) {
-    // 1.1.1.1 --> 1.1.1.0
+  // 1. Handle IPv4
+  if (ip.includes(".")) {
     return ip.split(".").slice(0, -1).join(".") + ".0";
   }
-  // 2001:db8:85a3:8d3:1319:8a2e:370:7348 --> 2001:db8:85a3::
-  return ip.split(":").slice(0, -5).join(":") + "::";
+
+  // 2. Handle IPv6
+  if (ip.includes(":")) {
+    const split = ip.split("::");
+    const leftSide = split[0];
+
+    const parts = leftSide ? leftSide.split(":") : [];
+
+    const firstThree = [];
+
+    for (let i = 0; i < 3; i++) {
+      firstThree.push(parts[i] || "0");
+    }
+
+    return firstThree.join(":") + "::";
+  }
+
+  return ip;
+}
+
+function getValue(key, FB_PARAMS_MAPPINGS, eventModel, event) {
+  if (valueIsFilled(FB_PARAMS_MAPPINGS[key])) {
+    return FB_PARAMS_MAPPINGS[key];
+  }
+
+  if (valueIsFilled(event.custom_data[key])) {
+    return event.custom_data[key];
+  }
+
+  const synonyms = {
+    search_string: ["search_string", "search_term"],
+    order_id: ["order_id", "transaction_id"],
+    contents: ["contents", "items"],
+  };
+  const eventSynonyms = synonyms[key] || [key];
+  for (let i = 0; i < eventSynonyms.length; i++) {
+    const synonym = eventSynonyms[i];
+    if (valueIsFilled(eventModel[synonym])) {
+      return eventModel[synonym];
+    }
+  }
+
+  if (valueIsFilled(eventModel["x-fb-cd-" + key])) {
+    return eventModel["x-fb-cd-" + key];
+  }
+
+  return undefined;
 }
 
 /* TRKKN Custom 2 END*/
@@ -1241,6 +1338,19 @@ ___SERVER_PERMISSIONS___
 ___TESTS___
 
 scenarios:
+- name: fb parameter is not overridden by custom
+  code: |
+    const cmtestConfigurationData = {
+      pixelId: '123',
+      apiAccessToken: "",
+      customParameterMapping: [{fb_cust_parameter_key: "value", fb_cust_parameter_value: "124"}],
+      fbParameterMapping: [{fb_parameter_key: "value", fb_parameter_value: "125"}]
+    };
+
+    runCode(cmtestConfigurationData);
+    let actual_value = JSON.parse(httpBody).data[0].custom_data.value;
+
+    assertThat(actual_value).isEqualTo("125");
 - name: on EventModel model data tag triggers to send to Conversions API
   code: |-
     // Act
@@ -1684,6 +1794,52 @@ scenarios:
     //Assert
     assertThat(JSON.parse(httpBody).data[0].user_data.em).isUndefined();
     assertThat(JSON.parse(httpBody).data[0].user_data.ph).isUndefined();
+- name: custom parameter mapping is picked up
+  code: |
+    const cmtestConfigurationData = {
+      pixelId: '123',
+      apiAccessToken: "",
+      customParameterMapping: [{fb_cust_parameter_key: "value", fb_cust_parameter_value: "124"}],
+    };
+
+    runCode(cmtestConfigurationData);
+    let actual_value = JSON.parse(httpBody).data[0].custom_data.value;
+
+    assertThat(actual_value).isEqualTo("124");
+- name: custom event mapping works
+  code: |-
+    const cmtestConfigurationData = {
+      pixelId: '123',
+      apiAccessToken: "",
+      customEventMapping: [{event_name: "Test1", event_name_facebook: "page_view_cust"}],
+    };
+
+    runCode(cmtestConfigurationData);
+    let actual = JSON.parse(httpBody).data[0].event_name;
+    assertThat(actual).isEqualTo("page_view_cust");
+- name: repost values are picked up
+  code: |-
+    const cmtestConfigurationData = {
+      pixelId: '123',
+      processTrkknRepostHits: true,
+      repostDataSource: "default",
+      apiAccessToken: "",
+    };
+
+    runCode(cmtestConfigurationData);
+    let actual = JSON.parse(httpBody).data[0].custom_data.currency;
+    assertThat(actual).isEqualTo("EUR");
+- name: repost event is picked up
+  code: |-
+    const cmtestConfigurationData = {
+      pixelId: '123',
+      processTrkknRepostHits: true,
+      repostDataSource: "default",
+      apiAccessToken: "",
+    };
+    runCode(cmtestConfigurationData);
+    let actual = JSON.parse(httpBody).data[0].event_name;
+    assertThat(actual).isEqualTo("test_event_repost");
 setup: |-
   // Arrange
   const JSON = require('JSON');
@@ -1716,7 +1872,7 @@ setup: |-
     testEventCode: 'test123',
     actionSource: 'source123',
     userDataAllowed: "allow",
-    anonymizeIP : 'ip_override'
+    anonymizeIP : 'ip_override',
   };
 
   const testData = {
@@ -1799,6 +1955,7 @@ setup: |-
     'data_processing_options': testData.data_processing_options,
     'data_processing_options_country': testData.data_processing_options_country,
     'data_processing_options_state': testData.data_processing_options_state,
+    'fbData': '{"currency":"EUR","event_name":"test_event_repost"}'
   };
 
   const expectedEventData = {
@@ -1848,8 +2005,8 @@ setup: |-
   });
 
   const apiEndpoint = 'https://graph.facebook.com';
-  const apiVersion = 'v16.0';
-  const partnerAgent = 'trkkn-2.0.0';
+  const apiVersion = 'v25.0';
+  const partnerAgent = 'trkkn-2.1.0';
 
   const routeParams = 'events?access_token=' + testConfigurationData.apiAccessToken;
   const requestEndpoint = [apiEndpoint,
@@ -1867,7 +2024,6 @@ setup: |-
 
   let actualSuccessCallback, httpBody;
   mock('sendHttpRequest', (postUrl, response, options, body) => {
-    log(body);
     actualSuccessCallback = response;
     httpBody = body;
     actualSuccessCallback(200, {}, '');
@@ -1876,13 +2032,14 @@ setup: |-
 
 ___NOTES___
 
-Based on the official template: https://github.com/facebookincubator/ConversionsAPI-Tag-for-GoogleTagManager version: 1.0.0 (July 23rd, 2025)
+Based on the official template: https://github.com/facebookincubator/ConversionsAPI-Tag-for-GoogleTagManager version: 24 April 2026
 Added Features:
-1. anonymisation of IP by default
+1. anonymisation of IP
 2. custom event mapping
 3. custom parameter mapping. 
 4. Support for FB Repost
 5. Support for multiple Pixel Ids
+6. Trkkn repost feature
 
 With this template you do not need to follow FB namings.
 
